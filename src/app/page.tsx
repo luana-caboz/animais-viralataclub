@@ -1,9 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import { getAnimals, slugifyAnimal } from "@/lib/animals";
+import { getAnimals } from "@/services/animal.service";
+import { getIdFromSlug, slugifyAnimal } from "@/lib/slug";
 
-export default function Home() {
-  const animals = getAnimals();
+export default async function Home() {
+  const animals = await getAnimals();
 
   return (
     <main className="min-h-screen bg-[#faf8f4]">
@@ -129,9 +130,8 @@ export default function Home() {
           {animals.map((animal) => (
             <Link
               key={animal.id}
-              href={`/animais/${slugifyAnimal(
-                animal.nome,
-                animal.id
+              href={`/animais/${getIdFromSlug(
+                slugifyAnimal(animal.nome, animal.id)
               )}`}
             >
               <div className="overflow-hidden rounded-3xl bg-white shadow-md transition-all hover:-translate-y-2 hover:shadow-2xl">
