@@ -10,39 +10,40 @@ export default function Home() {
       {/* HEADER */}
 
       <header className="border-b bg-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-4">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 md:px-6">
+          <div className="flex items-center gap-3">
             <Image
               src="/logo.png"
               alt="Vira Lata Club"
-              width={55}
-              height={55}
-              className="rounded-full"
+              width={45}
+              height={45}
+              className="rounded-full md:h-[55px] md:w-[55px]"
             />
 
             <div>
-              <h1 className="text-4xl font-extrabold tracking-tight">
+              <h1 className="text-xl font-extrabold tracking-tight sm:text-2xl md:text-4xl">
                 <span className="text-[#0f4fb6]">VIRA LATA</span>{" "}
                 <span className="text-[#f58220]">CLUB</span>
               </h1>
             </div>
           </div>
-
-          <a
-            href="#animais"
-            className="rounded-xl bg-[#f58220] px-6 py-3 font-semibold text-white transition hover:opacity-90"
-          >
-            Conheça os animais
-          </a>
         </div>
       </header>
 
       {/* HERO */}
 
       <section className="relative overflow-hidden">
-        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-20 lg:grid-cols-2">
+        <div className="mx-auto grid max-w-7xl gap-12 px-6 py-12 md:py-20 lg:grid-cols-2">
           <div className="flex flex-col justify-center">
-            <h2 className="text-6xl font-extrabold leading-tight">
+            <h2
+              className="
+              text-5xl
+              font-extrabold
+              leading-none
+              sm:text-6xl
+              lg:text-7xl
+            "
+            >
               <span className="text-[#0f4fb6]">
                 Adote amor.
               </span>
@@ -54,20 +55,44 @@ export default function Home() {
               </span>
             </h2>
 
-            <p className="mt-8 max-w-xl text-xl text-gray-600">
+            <p
+              className="
+              mt-6
+              max-w-xl
+              text-lg
+              leading-relaxed
+              text-gray-600
+              md:text-xl
+            "
+            >
               Conheça nossos cães disponíveis para adoção
               e encontre seu novo melhor amigo.
             </p>
 
             <a
               href="#animais"
-              className="mt-8 w-fit rounded-2xl bg-[#f58220] px-8 py-4 text-lg font-bold text-white shadow-lg transition hover:scale-105"
+              className="
+              mt-8
+              w-full
+              md:w-fit
+              rounded-2xl
+              bg-[#f58220]
+              px-8
+              py-4
+              text-center
+              text-lg
+              font-bold
+              text-white
+              shadow-lg
+              transition
+              hover:scale-105
+              "
             >
               🐾 Conheça nossos animais
             </a>
           </div>
 
-          <div className="flex items-center justify-center">
+          <div className="hidden items-center justify-center lg:flex">
             <div className="rounded-full bg-white p-6 shadow-2xl">
               <Image
                 src="/logo.png"
@@ -100,7 +125,7 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {animals.map((animal) => (
             <Link
               key={animal.id}
@@ -138,8 +163,8 @@ export default function Home() {
                   )}
                 </div>
 
-                <div className="p-5">
-                  <h3 className="text-2xl font-bold text-[#0f4fb6]">
+                <div className="p-4">
+                  <h3 className="text-xl font-bold text-[#0f4fb6]">
                     {animal.nome}
                   </h3>
 
