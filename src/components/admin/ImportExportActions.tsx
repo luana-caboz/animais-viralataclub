@@ -19,7 +19,7 @@ export function ImportExportActions() {
     );
 
     await fetch(
-      "/api/admin/import",
+      "/api/import",
       {
         method: "POST",
         body: formData,
@@ -71,12 +71,18 @@ export function ImportExportActions() {
       </label>
 
       <a
-        href="/api/admin/export"
+        href="/api/export"
         className="
           rounded-2xl
           border
+          border-slate-200
+          bg-white
           px-6
           py-3
+          font-medium
+          transition
+          hover:border-[#0f4fb6]
+          hover:text-[#0f4fb6]
         "
       >
         📤 Exportar XLSX

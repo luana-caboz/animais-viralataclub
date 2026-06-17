@@ -55,6 +55,19 @@ export async function createAnimal(
 
   console.log("PAYLOAD", payload);
 
+  const existingAnimal =
+  await supabase
+    .from("animals")
+    .select("id")
+    .eq("id", payload.id)
+    .maybeSingle();
+
+  if (existingAnimal.data) {
+    throw new Error(
+      "Já existe um animal com esse ID"
+    );
+  }
+
   const { error } = await supabase
     .from("animals")
     .insert(payload);

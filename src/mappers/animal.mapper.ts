@@ -67,13 +67,45 @@ export function mapAnimal(
   };
 }
 
+function normalizeStatus(
+  status: string
+) {
+  switch (status) {
+    case "Disponível":
+      return "DISPONIVEL";
+
+    case "Adotado":
+      return "ADOTADO";
+
+    case "Em tratamento":
+      return "EM_TRATAMENTO";
+
+    default:
+      return status;
+  }
+}
+
+function parseMonthYear(
+  value?: string
+) {
+  if (!value) return null;
+
+  const [month, year] =
+    value.split("/");
+
+  return `${year}-${month.padStart(
+    2,
+    "0"
+  )}-01`;
+}
+
 export function mapAnimalToDB(
   animal: Partial<Animal>
 ): Partial<AnimalDB> {
   return {
     id: animal.id,
     nome: animal.nome,
-    status: animal.status,
+    status: normalizeStatus(animal.status!),
 
     sexo: animal.sexo,
     porte: animal.porte,
@@ -81,7 +113,7 @@ export function mapAnimalToDB(
     raca: animal.raca,
 
     data_nascimento:
-      animal.dataNascimento,
+      parseMonthYear(animal.dataNascimento)!,
 
     castrado: animal.castrado,
     vacinado: animal.vacinado,
@@ -100,7 +132,7 @@ export function mapAnimalToDB(
     energia: animal.energia,
 
     data_resgate:
-      animal.dataResgate,
+      parseMonthYear(animal.dataResgate)!,
 
     historia: animal.historia,
 

@@ -14,6 +14,7 @@ export default function AnimalForm({
   animal,
 }: Props) {
   return (
+    
     <form action={
     animal?.id
       ? updateAnimal.bind(
@@ -117,6 +118,7 @@ export default function AnimalForm({
               <option>P</option>
               <option>M</option>
               <option>G</option>
+              <option>Filhote</option>
             </select>
           </div>
 

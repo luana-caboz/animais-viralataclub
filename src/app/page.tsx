@@ -215,6 +215,25 @@ export default async function Home() {
           </p>
         </div>
       </footer>
+
+      <Link
+        href="/login"
+        className="
+          fixed
+          bottom-6
+          right-6
+          z-50
+          rounded-full
+          bg-white
+          p-3
+          shadow-lg
+          transition
+          hover:scale-105
+        "
+        title="Área Administrativa"
+      >
+        ⚙️
+      </Link>
     </main>
   );
 }
