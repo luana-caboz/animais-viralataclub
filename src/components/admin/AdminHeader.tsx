@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
 import { logout } from "@/app/actions/auth";
 
 export function AdminHeader() {
@@ -16,7 +15,22 @@ export function AdminHeader() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur">
-      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
+      <div
+        className="
+          mx-auto
+          flex
+          max-w-7xl
+          flex-wrap
+          items-center
+          justify-between
+          gap-3
+          px-4
+          py-3
+          md:h-20
+          md:flex-nowrap
+          md:px-6
+        "
+      >
         {/* ESQUERDA */}
 
         <div className="flex items-center gap-6">
@@ -30,9 +44,12 @@ export function AdminHeader() {
               hover:text-[#0f4fb6]
             "
           >
-            ← Voltar
-          </button>
+            <span className="md:hidden">←</span>
 
+              <span className="hidden md:inline">
+                ← Voltar
+              </span>
+            </button>
           <Link
             href="/admin"
             className="flex items-center gap-4"
@@ -42,11 +59,11 @@ export function AdminHeader() {
               alt="Vira Lata Club"
               width={52}
               height={52}
-              className="rounded-full"
+              className="h-10 w-10 rounded-full md:h-[52px] md:w-[52px]"
             />
 
             <div>
-              <h1 className="text-2xl font-extrabold leading-none">
+              <h1 className="text-lg font-extrabold leading-none md:text-2xl">
                 <span className="text-[#0f4fb6]">
                   VIRA LATA
                 </span>{" "}
@@ -55,7 +72,7 @@ export function AdminHeader() {
                 </span>
               </h1>
 
-              <p className="text-xs text-slate-400">
+              <p className="hidden text-xs text-slate-400 md:block">
                 Painel Administrativo
               </p>
             </div>
@@ -64,7 +81,7 @@ export function AdminHeader() {
 
         {/* CENTRO */}
 
-        <nav className="hidden items-center gap-3 md:flex">
+        <nav className="hidden items-center gap-3 lg:flex">
           <Link
             href="/admin"
             className={`
