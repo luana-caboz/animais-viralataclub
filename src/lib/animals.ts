@@ -1,20 +1,44 @@
-import animals from "@/data/animals_melhor.json";
+import { mapAnimal } from "@/mappers/animal.mapper";
+import { supabase } from "./supabase";
+import { getIdFromSlug } from "@/lib/slug";
 
-export function slugifyAnimal(nome: string, id: string) {
-  return `${nome}-${id}`
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/\s+/g, "-");
+export async function getAnimals() {
+  const { data, error } = await supabase
+    .from("animals")
+    .select("*")
+    .order("nome");
+
+  if (error) {
+    throw error;
+  }
+
+  return data.map(mapAnimal);
 }
 
-export function getAnimals() {
-  return animals;
+export async function getAnimalById(
+  id: string
+) {
+  const { data, error } = await supabase
+    .from("animals")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) {
+    return null;
+  }
+
+  return mapAnimal(data);
 }
 
-export function getAnimalBySlug(slug: string) {
-  return animals.find(
-    (animal) =>
-      slugifyAnimal(animal.nome, animal.id) === slug
-  );
+export async function getAnimalBySlug(
+  slug: string
+) {
+  const id = getIdFromSlug(slug);
+
+  if (!id) {
+    return null;
+  }
+
+  return getAnimalById(id);
 }

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getAnimalBySlug } from "@/lib/animals";
+import { formatarData } from "@/lib/slug";
 import {
   ClipboardList,
   HeartPulse,
@@ -18,7 +19,7 @@ export default async function AnimalPage({
   params,
 }: Props) {
   const { slug } = await params;
-  const animal = getAnimalBySlug(slug);
+  const animal = await getAnimalBySlug(slug);
 
   if (!animal) {
     return (
@@ -145,7 +146,7 @@ export default async function AnimalPage({
             <div className="mt-6 rounded-3xl bg-gradient-to-r from-blue-50 to-orange-50 p-5">
               <p className="text-lg text-slate-700">
                 🏡 Procurando uma família desde{" "}
-                <strong>{animal.dataResgate}</strong>
+                <strong>{formatarData(animal.dataResgate)}</strong>
               </p>
             </div>
 
