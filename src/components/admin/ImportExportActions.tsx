@@ -1,8 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
+import {toast} from "sonner";
 
 export function ImportExportActions() {
+  const [loading, setLoading] =
+    useState(false);
+
   async function handleImport(
     event: React.ChangeEvent<HTMLInputElement>
   ) {
@@ -18,19 +23,33 @@ export function ImportExportActions() {
       file
     );
 
-    await fetch(
-      "/api/import",
-      {
-        method: "POST",
-        body: formData,
+    setLoading(true);
+
+    try {
+      const response =
+        await fetch("/api/import", {
+          method: "POST",
+          body: formData,
+        });
+
+      if (!response.ok) {
+        throw new Error(
+          "Erro ao importar planilha"
+        );
       }
-    );
 
-    alert(
-      "Importação concluída"
-    );
+      toast.success(
+        "Importação concluída!"
+      );
 
-    location.reload();
+      location.reload();
+    } catch {
+      toast.error(
+        "Erro ao importar planilha"
+      );
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -50,15 +69,28 @@ export function ImportExportActions() {
       </Link>
 
       <label
-        className="
+        className={`
           cursor-pointer
           rounded-2xl
           border
+          border-slate-200
+          bg-white
           px-6
           py-3
-        "
+          font-medium
+          transition
+          hover:border-[#f58220]
+          hover:text-[#f58220]
+          ${
+            loading
+              ? "pointer-events-none opacity-70"
+              : ""
+          }
+        `}
       >
-        📥 Importar XLSX
+        {loading
+          ? "Importando..."
+          : "📥 Importar XLSX"}
 
         <input
           type="file"
