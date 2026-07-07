@@ -1,14 +1,19 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { supabase } from "@/lib/supabase";
 import { redirect } from "next/navigation";
 
-export async function createAnimal(
-  formData: FormData
-) {
-  console.log("ACTION EXECUTOU");
+import { supabase } from "@/lib/supabase";
 
+type ActionResponse = {
+  success?: boolean;
+  error?: string;
+};
+
+export async function createAnimal(
+  _prevState: ActionResponse | null,
+  formData: FormData
+): Promise<ActionResponse> {
   const payload = {
     id: formData.get("id"),
     nome: formData.get("nome"),
@@ -53,19 +58,27 @@ export async function createAnimal(
       formData.get("fotoUrl"),
   };
 
-  console.log("PAYLOAD", payload);
-
-  const existingAnimal =
-  await supabase
+  const {
+    data: existingAnimal,
+    error: existingError,
+  } = await supabase
     .from("animals")
     .select("id")
     .eq("id", payload.id)
     .maybeSingle();
 
-  if (existingAnimal.data) {
-    throw new Error(
-      "Já existe um animal com esse ID"
-    );
+  if (existingError) {
+    return {
+      error:
+        "Erro ao validar ID do animal",
+    };
+  }
+
+  if (existingAnimal) {
+    return {
+      error:
+        "Já existe um animal com esse ID",
+    };
   }
 
   const { error } = await supabase
@@ -73,19 +86,27 @@ export async function createAnimal(
     .insert(payload);
 
   if (error) {
-    console.error("Error inserting animal:", error);
-    throw new Error(error.message);
+    console.error(
+      "Error inserting animal:",
+      error
+    );
+
+    return {
+      error:
+        "Erro ao salvar animal",
+    };
   }
 
-revalidatePath("/admin/animals");
+  revalidatePath("/admin/animals");
 
-redirect("/admin/animals");
+  redirect("/admin/animals");
 }
 
 export async function updateAnimal(
   id: string,
+  _prevState: ActionResponse | null,
   formData: FormData
-) {
+): Promise<ActionResponse> {
   const { error } = await supabase
     .from("animals")
     .update({
@@ -132,17 +153,41 @@ export async function updateAnimal(
     })
     .eq("id", id);
 
+  if (error) {
+    console.error(
+      "Error updating animal:",
+      error
+    );
+
+    return {
+      error:
+        "Erro ao atualizar animal",
+    };
+  }
+
   revalidatePath("/admin/animals");
+
   redirect("/admin/animals");
 }
 
 export async function deleteAnimal(
   id: string
 ) {
-  await supabase
+  const { error } = await supabase
     .from("animals")
     .delete()
     .eq("id", id);
+
+  if (error) {
+    console.error(
+      "Error deleting animal:",
+      error
+    );
+
+    throw new Error(
+      "Erro ao excluir animal"
+    );
+  }
 
   revalidatePath("/admin/animals");
 }

@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { login } from "@/app/actions/auth";
+import { SubmitButton } from "@/components/admin/SubmitButton";
 
 export default function LoginPage() {
   const [state, formAction] =
@@ -83,23 +84,12 @@ export default function LoginPage() {
             />
           </div>
 
-          <button
-            type="submit"
-            className="
-              w-full
-              rounded-xl
-              bg-[#f58220]
-              py-3
-              font-semibold
-              text-white
-              transition
-              hover:opacity-90
-              disabled:cursor-not-allowed
-              disabled:opacity-50
-            "
-          >
-            Entrar
-          </button>
+          <div className="flex justify-end">
+            <SubmitButton
+              text="Entrar"
+              loadingText="Entrando..."
+            />
+          </div>
         </form>
       </div>
     </main>

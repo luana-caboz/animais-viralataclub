@@ -1,6 +1,8 @@
 import Link from "next/link";
+
 import { Animal } from "@/types/animal";
-import { deleteAnimal } from "@/app/actions/animals";
+
+import { DeleteAnimalButton } from "@/components/admin/DeleteAnimalButton";
 
 type Props = {
   animals: Animal[];
@@ -28,7 +30,8 @@ export function AnimalTable({
               </h3>
 
               <p className="text-slate-500">
-                {animal.sexo} • Porte {animal.porte}
+                {animal.sexo} • Porte{" "}
+                {animal.porte}
               </p>
 
               <p className="mt-2">
@@ -36,29 +39,23 @@ export function AnimalTable({
               </p>
             </div>
 
-            <Link
-              href={`/admin/animals/${animal.id}`}
-              className="text-[#0f4fb6]"
-            >
-              Editar
-            </Link>
-          </div>
+            <div className="flex items-center gap-4">
+              <Link
+                href={`/admin/animals/${animal.id}`}
+                className="
+                  font-medium
+                  text-[#0f4fb6]
+                  hover:underline
+                "
+              >
+                Editar
+              </Link>
 
-          <form
-            action={deleteAnimal.bind(
-              null,
-              animal.id
-            )}
-          >
-            <button
-              className="
-                text-red-500
-                font-medium
-              "
-            >
-              Excluir
-            </button>
-          </form>
+              <DeleteAnimalButton
+                id={animal.id}
+              />
+            </div>
+          </div>
         </div>
       ))}
     </div>
