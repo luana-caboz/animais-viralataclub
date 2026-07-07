@@ -49,7 +49,7 @@ export default async function AdminPage({
           </p>
 
           <h1 className="mt-2 text-5xl font-extrabold text-[#0f4fb6]">
-            Bem-vinda, Luana 👋
+            Bem-vinda 👋
           </h1>
 
           <p className="mt-3 text-lg text-slate-500">
