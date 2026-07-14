@@ -40,15 +40,16 @@ export default function SortableImage({
     <div
       ref={setNodeRef}
       style={style}
-      {...attributes}
-      {...listeners}
-      className="touch-none"
     >
       <AnimalImageCard
         image={image}
         onChange={onChange}
         onDelete={onDelete}
         onSetPrincipal={onSetPrincipal}
+        dragHandle={{
+          ...attributes,
+          ...listeners,
+        }}
       />
     </div>
   );

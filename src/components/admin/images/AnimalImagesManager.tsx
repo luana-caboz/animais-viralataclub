@@ -7,6 +7,7 @@ import {
   rectSortingStrategy,
   SortableContext,
 } from "@dnd-kit/sortable";
+import ImageUploader from "./ImageUploader";
 import SortableImage from "./SortableImage";
 
 type Props = {
@@ -72,26 +73,39 @@ export default function AnimalImagesManager({
   }
 
   return (
-    <DndContext
-      collisionDetection={closestCenter}
-      onDragEnd={handleDragEnd}
-    >
-      <SortableContext
-        items={value.map((image) => image.id)}
-        strategy={rectSortingStrategy}
+    <>
+      <div className="rounded-2xl bg-white p-6 shadow">
+        <h2 className="mb-6 text-2xl font-bold">
+          Fotos
+        </h2>
+
+        <ImageUploader
+          images={value}
+          onChange={onChange}
+        />
+      </div>
+
+      <DndContext
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
       >
-        <div className="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {value.map((image) => (
-            <SortableImage
-              key={image.id}
-              image={image}
-              onChange={updateImage}
-              onDelete={() => removeImage(image.id)}
-              onSetPrincipal={() => setPrincipal(image.id)}
-            />
-          ))}
-        </div>
-      </SortableContext>
-    </DndContext>
+        <SortableContext
+          items={value.map((image) => image.id)}
+          strategy={rectSortingStrategy}
+        >
+          <div className="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {value.map((image) => (
+              <SortableImage
+                key={image.id}
+                image={image}
+                onChange={updateImage}
+                onDelete={() => removeImage(image.id)}
+                onSetPrincipal={() => setPrincipal(image.id)}
+              />
+            ))}
+          </div>
+        </SortableContext>
+      </DndContext>
+    </>
   );
 }
