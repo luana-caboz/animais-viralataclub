@@ -1,7 +1,7 @@
+import { getIdFromSlug, slugifyAnimal } from "@/lib/slug";
+import { getAnimals } from "@/services/animal.service";
 import Image from "next/image";
 import Link from "next/link";
-import { getAnimals } from "@/services/animal.service";
-import { getIdFromSlug, slugifyAnimal } from "@/lib/slug";
 
 export default async function Home() {
   const animals = await getAnimals();
@@ -136,17 +136,17 @@ export default async function Home() {
             >
               <div className="overflow-hidden rounded-3xl bg-white shadow-md transition-all hover:-translate-y-2 hover:shadow-2xl">
                 <div className="relative aspect-square overflow-hidden">
-                  {animal.fotoUrl?.trim() ? (
+                  {(animal.fotos?.[0]?.url ?? "").trim() ? (
                     <>
                       <Image
-                      src={animal.fotoUrl}
-                      alt=""
-                      fill
-                      className="object-cover blur-2xl scale-125 opacity-25"
-                    />
+                        src={animal.fotos?.[0]?.url ?? ""}
+                        alt=""
+                        fill
+                        className="object-cover blur-2xl scale-125 opacity-25"
+                      />
 
                       <Image
-                        src={animal.fotoUrl}
+                        src={animal.fotos?.[0]?.url ?? ""}
                         alt={animal.nome}
                         fill
                         className="object-contain p-4"
