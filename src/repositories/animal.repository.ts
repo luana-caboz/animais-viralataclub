@@ -1,22 +1,28 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { supabase } from "@/lib/supabase";
+import { CreateAnimalDB } from "@/types/create-animal";
 
 export async function findAll() {
   return supabase
     .from("animals")
-    .select("*")
+    .select(`
+        *,
+        animal_images(*)
+    `)
     .order("nome");
 }
 
 export async function findById(id: string) {
   return supabase
     .from("animals")
-    .select("*")
+    .select(`
+        *,
+        animal_images(*)
+    `)
     .eq("id", id)
     .single();
 }
 
-export async function create(payload: any) {
+export async function create(payload: CreateAnimalDB) {
   return supabase
     .from("animals")
     .insert(payload);
@@ -24,7 +30,7 @@ export async function create(payload: any) {
 
 export async function update(
   id: string,
-  payload: any
+  payload: Partial<CreateAnimalDB>
 ) {
   return supabase
     .from("animals")

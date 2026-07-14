@@ -11,7 +11,6 @@ type Props = {
 export function SubmitButton({
   text,
   loadingText,
-  disabled,
 }: Props) {
   const { pending } =
     useFormStatus();
@@ -19,7 +18,6 @@ export function SubmitButton({
   return (
     <button
       type="submit"
-      disabled={pending || disabled}
       className="
         rounded-xl
         bg-[#f58220]

@@ -82,17 +82,25 @@ export async function createAnimal(
     .from("animals")
     .insert(payload);
 
-  const fotos = JSON.parse(
-    String(formData.get("fotos") ?? "[]")
+    if (error) {
+      return {
+        error:
+          "Erro ao salvar animal",
+      };
+    }
+
+  const images = JSON.parse(
+    String(formData.get("images") ?? "[]")
   );
 
-  if (fotos.length) {
+  if (images.length > 0) {
+    const { error: imagesError } =
     await supabase
       .from("animal_images")
       .insert(
-        fotos.map(
+        images.map(
           (
-            foto: {
+            image: {
               url: string;
               ordem: number;
               principal: boolean;
@@ -100,26 +108,21 @@ export async function createAnimal(
             }
           ) => ({
             animal_id: payload.id,
-            url: foto.url,
-            ordem: foto.ordem,
-            principal: foto.principal,
-            legenda: foto.legenda ?? null,
+            url: image.url,
+            ordem: image.ordem,
+            principal: image.principal,
+            legenda: image.legenda ?? null,
           })
         )
       );
-  }
 
-  if (error) {
-    console.error(
-      "Error inserting animal:",
-      error
-    );
-
+  if (imagesError) {
     return {
       error:
-        "Erro ao salvar animal",
+        "Erro ao salvar imagens",
     };
   }
+}
 
   revalidatePath("/admin/animals");
 
@@ -172,22 +175,31 @@ export async function updateAnimal(
       historia:
         formData.get("historia"),
     })
+
+      if (error) {
+        return {
+          error:
+            "Erro ao atualizar animal",
+        };
+      }
+
     await supabase
       .from("animal_images")
       .delete()
       .eq("animal_id", id);
 
-    const fotos = JSON.parse(
-      String(formData.get("fotos") ?? "[]")
+    const images = JSON.parse(
+      String(formData.get("images") ?? "[]")
     );
     
-    if (fotos.length) {
+    if (images.length > 0) {
+      const { error: imagesError } =
       await supabase
         .from("animal_images")
         .insert(
-          fotos.map(
+          images.map(
             (
-              foto: {
+             image: {
                 url: string;
                 ordem: number;
                 principal: boolean;
@@ -195,25 +207,21 @@ export async function updateAnimal(
               }
             ) => ({
               animal_id: id,
-              url: foto.url,
-              ordem: foto.ordem,
-              principal: foto.principal,
-              legenda: foto.legenda ?? null,
+              url: image.url,
+              ordem: image.ordem,
+              principal: image.principal,
+              legenda: image.legenda ?? null,
             })
           )
         );
-    }
-  if (error) {
-    console.error(
-      "Error updating animal:",
-      error
-    );
 
-    return {
-      error:
-        "Erro ao atualizar animal",
-    };
-  }
+      if (imagesError) {
+        return {
+          error:
+            "Erro ao salvar imagens",
+        };
+      }
+    }
 
   revalidatePath("/admin/animals");
 

@@ -1,6 +1,5 @@
 import { InternalAnimal } from "@/types/animal";
 import { AnimalDB } from "@/types/animal-db";
-import { AnimalImageDB } from "@/types/animal-image";
 
 function calcularIdade(
   dataNascimento: string
@@ -71,7 +70,7 @@ export function mapAnimal(
 
     fotos: animal.animal_images ?? [],
 
-    // novos campos internos
+    // campos internos
 
     localizacaoAtual:
       animal.localizacao_atual ??
@@ -142,7 +141,6 @@ function parseMonthYear(
 ) {
   if (!value) return null;
 
-  // já está em YYYY-MM-DD
   if (value.includes("-")) {
     return value;
   }
