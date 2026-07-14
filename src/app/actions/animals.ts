@@ -53,9 +53,6 @@ export async function createAnimal(
 
     historia:
       formData.get("historia"),
-
-    foto_url:
-      formData.get("fotoUrl"),
   };
 
   const {
@@ -85,17 +82,47 @@ export async function createAnimal(
     .from("animals")
     .insert(payload);
 
-  if (error) {
-    console.error(
-      "Error inserting animal:",
-      error
-    );
+    if (error) {
+      return {
+        error:
+          "Erro ao salvar animal",
+      };
+    }
 
+  const images = JSON.parse(
+    String(formData.get("images") ?? "[]")
+  );
+
+  if (images.length > 0) {
+    const { error: imagesError } =
+    await supabase
+      .from("animal_images")
+      .insert(
+        images.map(
+          (
+            image: {
+              url: string;
+              ordem: number;
+              principal: boolean;
+              legenda?: string;
+            }
+          ) => ({
+            animal_id: payload.id,
+            url: image.url,
+            ordem: image.ordem,
+            principal: image.principal,
+            legenda: image.legenda ?? null,
+          })
+        )
+      );
+
+  if (imagesError) {
     return {
       error:
-        "Erro ao salvar animal",
+        "Erro ao salvar imagens",
     };
   }
+}
 
   revalidatePath("/admin/animals");
 
@@ -147,23 +174,54 @@ export async function updateAnimal(
 
       historia:
         formData.get("historia"),
-
-      foto_url:
-        formData.get("fotoUrl"),
     })
-    .eq("id", id);
 
-  if (error) {
-    console.error(
-      "Error updating animal:",
-      error
+      if (error) {
+        return {
+          error:
+            "Erro ao atualizar animal",
+        };
+      }
+
+    await supabase
+      .from("animal_images")
+      .delete()
+      .eq("animal_id", id);
+
+    const images = JSON.parse(
+      String(formData.get("images") ?? "[]")
     );
+    
+    if (images.length > 0) {
+      const { error: imagesError } =
+      await supabase
+        .from("animal_images")
+        .insert(
+          images.map(
+            (
+             image: {
+                url: string;
+                ordem: number;
+                principal: boolean;
+                legenda?: string;
+              }
+            ) => ({
+              animal_id: id,
+              url: image.url,
+              ordem: image.ordem,
+              principal: image.principal,
+              legenda: image.legenda ?? null,
+            })
+          )
+        );
 
-    return {
-      error:
-        "Erro ao atualizar animal",
-    };
-  }
+      if (imagesError) {
+        return {
+          error:
+            "Erro ao salvar imagens",
+        };
+      }
+    }
 
   revalidatePath("/admin/animals");
 

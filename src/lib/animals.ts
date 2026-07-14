@@ -1,11 +1,14 @@
+import { getIdFromSlug } from "@/lib/slug";
 import { mapAnimal } from "@/mappers/animal.mapper";
 import { supabase } from "./supabase";
-import { getIdFromSlug } from "@/lib/slug";
 
 export async function getAnimals() {
   const { data, error } = await supabase
     .from("animals")
-    .select("*")
+    .select(`
+        *,
+        animal_images(*)
+    `)
     .order("nome");
 
   if (error) {
@@ -20,7 +23,10 @@ export async function getAnimalById(
 ) {
   const { data, error } = await supabase
     .from("animals")
-    .select("*")
+    .select(`
+        *,
+        animal_images(*)
+    `)
     .eq("id", id)
     .single();
 

@@ -1,5 +1,3 @@
-import Image from "next/image";
-import Link from "next/link";
 import { getAnimalBySlug } from "@/lib/animals";
 import { formatarData } from "@/lib/slug";
 import {
@@ -8,6 +6,8 @@ import {
   PawPrint,
   Users,
 } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 
 type Props = {
   params: Promise<{
@@ -96,11 +96,11 @@ export default async function AnimalPage({
                 🏠 Procuro uma família
               </div>
 
-              {animal.fotoUrl?.trim() ? (
+              {(animal.fotos?.[0]?.url ?? "").trim() ? (
                 <>
                   {/* fundo desfocado */}
                   <Image
-                    src={animal.fotoUrl}
+                    src={animal.fotos?.[0]?.url ?? ""}
                     alt=""
                     fill
                     className="object-cover blur-2xl scale-125 opacity-25"
@@ -108,7 +108,7 @@ export default async function AnimalPage({
 
                   {/* foto principal */}
                   <Image
-                    src={animal.fotoUrl}
+                    src={animal.fotos?.[0]?.url ?? ""}
                     alt={animal.nome}
                     fill
                     className="object-contain p-6"

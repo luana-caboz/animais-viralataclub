@@ -1,6 +1,4 @@
-import { AnimalImage } from "./animal-image";
-
-export type Animal = {
+export type SheetAnimal = {
   id: string;
   nome: string;
   status: string;
@@ -8,33 +6,24 @@ export type Animal = {
   porte: string;
   cores: string;
   raca: string;
-  energia: string;
-  personalidade: string;
-  historia: string;
-  fotos: AnimalImage[];
+  dataNascimento: string;
   idadeEstimada?: string;
+  localizacaoAtual?: string;
   castrado: boolean;
   vacinado: boolean;
   vermifugado: boolean;
   condicoesSaude: string;
+  personalidade: string;
   caes: string;
   gatos: string;
   criancas: string;
-  dataNascimento: string;
+  energia: string;
   dataResgate: string;
-};
-
-export type InternalAnimal = Animal & {
-  localizacaoAtual?: string;
+  historia: string;
   quemAdotou?: string;
   dataAdocao?: string;
   comoFoiAdotado?: string;
   contato?: string;
   formulario?: string;
   assinouTermo?: boolean;
-  updatedFromSheetAt?: string;
-  updatedManuallyAt?: string;
-  origem?: "admin" | "sheet" | "api";
-  ativo?: boolean;
-  visivelNoSite?: boolean;
 };
