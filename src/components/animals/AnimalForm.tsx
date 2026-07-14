@@ -8,6 +8,7 @@ import {
 } from "react";
 import { toast } from "sonner";
 import { Animal } from "@/types/animal";
+import { AnimalImage } from "@/types/animal-image";
 import {
   createAnimal,
   updateAnimal,
@@ -17,6 +18,7 @@ import { SubmitButton } from "@/components/admin/SubmitButton";
 
 type Props = {
   animal?: Partial<Animal>;
+  images?: AnimalImage[];
 };
 
 type FormState = {
@@ -26,11 +28,10 @@ type FormState = {
 
 export default function AnimalForm({
   animal,
+  images: initialImages = [],
 }: Props) {
-  const [fotoUrl, setFotoUrl] =
-    useState(
-      animal?.fotoUrl || ""
-    );
+  const [images, setImages] =
+  useState(initialImages);
 
   const [uploading, setUploading] =
     useState(false);
@@ -38,10 +39,24 @@ export default function AnimalForm({
   async function handleUpload(
     event: React.ChangeEvent<HTMLInputElement>
   ) {
-    const file =
-      event.target.files?.[0];
+    const files =
+      event.target.files;
 
-    if (!file) return;
+    if (!files) return;
+
+    for (const file of files) {
+      const url = await uploadAnimalImage(file);
+      setImages((old) => [
+        ...old, 
+        { 
+          id: url,
+          animalId: animal?.id || "", 
+          url, 
+          ordem: old.length, 
+          principal: old.length === 0 
+        }
+      ]);
+    }
 
     try {
       setUploading(true);
@@ -49,7 +64,16 @@ export default function AnimalForm({
       const url =
         await uploadAnimalImage(file);
 
-      setFotoUrl(url);
+      setImages((old) => [
+        ...old, 
+        { 
+          id: url,
+          animalId: animal?.id || "", 
+          url, 
+          ordem: old.length, 
+          principal: old.length === 0 
+        }
+      ]);
       toast.success(
         "Imagem enviada com sucesso!"
       );
@@ -566,6 +590,7 @@ export default function AnimalForm({
 
               <input
                 type="file"
+                multiple
                 accept="
                   image/png,
                   image/jpeg,

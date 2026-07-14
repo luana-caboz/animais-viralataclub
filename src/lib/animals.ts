@@ -5,7 +5,10 @@ import { getIdFromSlug } from "@/lib/slug";
 export async function getAnimals() {
   const { data, error } = await supabase
     .from("animals")
-    .select("*")
+    .select(`
+        *,
+        animal_images(*)
+    `)
     .order("nome");
 
   if (error) {

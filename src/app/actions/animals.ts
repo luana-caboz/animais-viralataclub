@@ -53,9 +53,6 @@ export async function createAnimal(
 
     historia:
       formData.get("historia"),
-
-    foto_url:
-      formData.get("fotoUrl"),
   };
 
   const {
@@ -84,6 +81,33 @@ export async function createAnimal(
   const { error } = await supabase
     .from("animals")
     .insert(payload);
+
+  const fotos = JSON.parse(
+    String(formData.get("fotos") ?? "[]")
+  );
+
+  if (fotos.length) {
+    await supabase
+      .from("animal_images")
+      .insert(
+        fotos.map(
+          (
+            foto: {
+              url: string;
+              ordem: number;
+              principal: boolean;
+              legenda?: string;
+            }
+          ) => ({
+            animal_id: payload.id,
+            url: foto.url,
+            ordem: foto.ordem,
+            principal: foto.principal,
+            legenda: foto.legenda ?? null,
+          })
+        )
+      );
+  }
 
   if (error) {
     console.error(
@@ -147,12 +171,38 @@ export async function updateAnimal(
 
       historia:
         formData.get("historia"),
-
-      foto_url:
-        formData.get("fotoUrl"),
     })
-    .eq("id", id);
+    await supabase
+      .from("animal_images")
+      .delete()
+      .eq("animal_id", id);
 
+    const fotos = JSON.parse(
+      String(formData.get("fotos") ?? "[]")
+    );
+    
+    if (fotos.length) {
+      await supabase
+        .from("animal_images")
+        .insert(
+          fotos.map(
+            (
+              foto: {
+                url: string;
+                ordem: number;
+                principal: boolean;
+                legenda?: string;
+              }
+            ) => ({
+              animal_id: id,
+              url: foto.url,
+              ordem: foto.ordem,
+              principal: foto.principal,
+              legenda: foto.legenda ?? null,
+            })
+          )
+        );
+    }
   if (error) {
     console.error(
       "Error updating animal:",
