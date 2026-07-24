@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { Animal } from "@/types/animal";
 
-import { DeleteAnimalButton } from "@/components/admin/DeleteAnimalButton";
+import { DeleteAnimalButton } from "@/modules/admin/components";
 
 type Props = {
   animals: Animal[];

@@ -1,9 +1,6 @@
-import { getAnimals } from "@/lib/animals";
+import { getAnimals } from "@/modules/animals/services/animal.service";
 
-import { DashboardCards } from "@/components/admin/DashboardCards";
-import { ImportExportActions } from "@/components/admin/ImportExportActions";
-import { AnimalFilters } from "@/components/admin/AnimalFilters";
-import { AnimalTable } from "@/components/admin/AnimalTable";
+import { AnimalFilters, AnimalTable, DashboardCards, ImportExportActions } from "@/modules/admin/components";
 
 type Props = {
   searchParams: Promise<{

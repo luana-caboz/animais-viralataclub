@@ -1,5 +1,5 @@
 import { getIdFromSlug, slugifyAnimal } from "@/lib/slug";
-import { getAnimals } from "@/services/animal.service";
+import { getAnimals } from "@/modules/animals/services/animal.service";
 import Image from "next/image";
 import Link from "next/link";
 

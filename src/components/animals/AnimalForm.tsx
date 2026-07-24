@@ -1,16 +1,16 @@
 "use client";
 
+import { SubmitButton } from "@/modules/admin/components";
 import {
-  createAnimal,
-  updateAnimal,
-} from "@/app/actions/animals";
-import { SubmitButton } from "@/components/admin/SubmitButton";
+    createAnimal,
+    updateAnimal,
+} from "@/modules/animals/actions/animals";
 import { Animal } from "@/types/animal";
 import { AnimalImage } from "@/types/animal-image";
 import {
-  useActionState,
-  useEffect,
-  useState,
+    useActionState,
+    useEffect,
+    useState,
 } from "react";
 import { toast } from "sonner";
 import AnimalImagesManager from "../admin/images/AnimalImagesManager";

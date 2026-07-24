@@ -1,4 +1,4 @@
-import AnimalForm from "@/components/animals/AnimalForm";
+import AnimalForm from "@/modules/animals/components/AnimalForm";
 
 export default function NewAnimalPage() {
   return (

@@ -1,5 +1,5 @@
+import { getAnimals } from "@/modules/animals/services/animal.service";
 import Link from "next/link";
-import { getAnimals } from "@/lib/animals";
 
 export default async function AdminPage() {
   const animals = await getAnimals();
