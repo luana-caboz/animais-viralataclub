@@ -1,6 +1,8 @@
 import AnimalForm from "@/modules/animals/components/AnimalForm";
 import { getAnimalById } from "@/modules/animals/services/animal.service";
 
+export const dynamic = "force-dynamic";
+
 type Props = {
   params: Promise<{
     id: string;

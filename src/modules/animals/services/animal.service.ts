@@ -3,25 +3,31 @@ import { mapAnimal } from "@/mappers/animal.mapper";
 import * as repository from "@/repositories/animal.repository";
 
 export async function getAnimals() {
-  const { data, error } =
-    await repository.findAll();
+  try {
+    const { data, error } = await repository.findAll();
 
-  if (error) throw error;
+    if (error) throw error;
 
-  return data.map(mapAnimal);
+    return data.map(mapAnimal);
+  } catch {
+    return [];
+  }
 }
 
 export async function getAnimalById(
   id: string
 ) {
-  const { data, error } =
-    await repository.findById(id);
+  try {
+    const { data, error } = await repository.findById(id);
 
-  if (error || !data) {
+    if (error || !data) {
+      return null;
+    }
+
+    return mapAnimal(data);
+  } catch {
     return null;
   }
-
-  return mapAnimal(data);
 }
 
 export async function getAnimalBySlug(slug: string) {

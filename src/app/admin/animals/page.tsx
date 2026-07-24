@@ -2,6 +2,8 @@ import { getAnimals } from "@/modules/animals/services/animal.service";
 
 import { AnimalFilters, AnimalTable, DashboardCards, ImportExportActions } from "@/modules/admin/components";
 
+export const dynamic = "force-dynamic";
+
 type Props = {
   searchParams: Promise<{
     status?: string;
