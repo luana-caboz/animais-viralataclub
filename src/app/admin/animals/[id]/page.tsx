@@ -1,5 +1,5 @@
-import AnimalForm from "@/components/animals/AnimalForm";
-import { getAnimalById } from "@/lib/animals";
+import AnimalForm from "@/modules/animals/components/AnimalForm";
+import { getAnimalById } from "@/modules/animals/services/animal.service";
 
 type Props = {
   params: Promise<{

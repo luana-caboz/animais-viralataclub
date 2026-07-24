@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import * as XLSX from "xlsx";
 
-import { getAnimals } from "@/lib/animals";
 import { supabase } from "@/lib/supabase";
-import { Animal } from "@/types/animal";
 import { mapAnimalToDB } from "@/mappers/animal.mapper";
+import { getAnimals } from "@/modules/animals/services/animal.service";
+import { Animal } from "@/types/animal";
 
 export async function GET() {
   const animals = await getAnimals();

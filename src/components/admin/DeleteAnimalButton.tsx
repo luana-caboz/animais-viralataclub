@@ -1,6 +1,6 @@
 "use client";
 
-import { deleteAnimal } from "@/app/actions/animals";
+import { deleteAnimal } from "@/modules/animals/actions/animals";
 
 type Props = {
   id: string;

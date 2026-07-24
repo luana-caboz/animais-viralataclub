@@ -1,10 +1,10 @@
-import { getAnimalBySlug } from "@/lib/animals";
 import { formatarData } from "@/lib/slug";
+import { getAnimalBySlug } from "@/modules/animals/services/animal.service";
 import {
-  ClipboardList,
-  HeartPulse,
-  PawPrint,
-  Users,
+    ClipboardList,
+    HeartPulse,
+    PawPrint,
+    Users,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";

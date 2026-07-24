@@ -1,9 +1,9 @@
 "use client";
 
+import { logout } from "@/modules/auth/actions/auth";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { logout } from "@/app/actions/auth";
 
 export function AdminHeader() {
   const pathname = usePathname();
