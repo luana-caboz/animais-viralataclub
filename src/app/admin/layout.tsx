@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase-server";
-import { AdminHeader } from "@/components/admin/AdminHeader";
+import { AdminHeader } from "@/modules/admin/components";
 import { cookies } from "next/headers";
 
 export default async function AdminLayout({
