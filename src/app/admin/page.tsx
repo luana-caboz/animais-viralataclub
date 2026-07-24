@@ -1,6 +1,8 @@
 import { getAnimals } from "@/modules/animals/services/animal.service";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminPage() {
   const animals = await getAnimals();
 
