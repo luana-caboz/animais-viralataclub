@@ -1,0 +1,74 @@
+import { google } from "googleapis";
+
+import { getGoogleAuth } from "../google-drive/client";
+import { SheetAnimal } from "./types";
+
+export async function readAnimalsSheet(): Promise<SheetAnimal[]> {
+  const auth =
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await getGoogleAuth().getClient() as any;
+
+  const sheets = google.sheets({
+    version: "v4",
+    auth,
+  });
+console.log("Reading animals sheet..."+process.env.GOOGLE_SHEET_ID);
+  const spreadsheetId =
+    process.env.GOOGLE_SHEET_ID!;
+
+  const { data } =
+    await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: "Cachorros!A3:AA",
+    });
+
+  const rows = (data.values ?? []).filter(
+  (row) => row[0]?.trim()
+);
+
+  return rows.map((row) => ({
+    id: row[0] ?? "",
+    nome: row[1] ?? "",
+    status: row[2] ?? "",
+
+    sexo: row[3] ?? "",
+    porte: row[4] ?? "",
+    cores: row[5] ?? "",
+    raca: row[6] ?? "",
+
+    dataNascimento: row[7] ?? "",
+    idadeEstimada: row[8] ?? "",
+
+    localizacaoAtual: row[9] ?? "",
+
+    castrado: row[10] ?? "",
+    vacinado: row[11] ?? "",
+    vermifugado: row[12] ?? "",
+
+    condicoesSaude: row[13] ?? "",
+
+    personalidade: row[14] ?? "",
+
+    caes: row[15] ?? "",
+    gatos: row[16] ?? "",
+    criancas: row[17] ?? "",
+
+    energia: row[18] ?? "",
+
+    dataResgate: row[19] ?? "",
+
+    historia: row[20] ?? "",
+
+    quemAdotou: row[21] ?? "",
+
+    dataAdocao: row[22] ?? "",
+
+    comoFoiAdotado: row[23] ?? "",
+
+    contato: row[24] ?? "",
+
+    formulario: row[25] ?? "",
+
+    assinouTermo: row[26] ?? "",
+  }));
+}
