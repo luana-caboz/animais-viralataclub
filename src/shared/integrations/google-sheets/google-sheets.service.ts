@@ -22,9 +22,8 @@ console.log("Reading animals sheet..."+process.env.GOOGLE_SHEET_ID);
       range: "Cachorros!A3:AA",
     });
 
-  const rows = (data.values ?? []).filter(
-  (row) => row[0]?.trim()
-);
+  const rawRows = (data.values ?? []) as string[][];
+  const rows = rawRows.filter((row) => (row[0] ?? "").toString().trim());
 
   return rows.map((row) => ({
     id: row[0] ?? "",

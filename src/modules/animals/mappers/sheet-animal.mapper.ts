@@ -1,11 +1,10 @@
-import { AnimalSync } from "../types/animal-sync";
-import { SheetAnimal } from "../types/sheet-animal";
-
+import { SheetAnimal } from "@/shared/integrations/google-sheets/types";
 import {
     parseBoolean,
     parseDate,
     parseStatus,
 } from "../../sync/services/helpers";
+import { AnimalSync } from "../types/animal-sync";
 
 export function mapSheetAnimal(
   animal: SheetAnimal
@@ -30,6 +29,9 @@ export function mapSheetAnimal(
     dataNascimento: parseDate(
       animal.dataNascimento
     ),
+
+    idadeEstimada:
+      animal.idadeEstimada,
 
     localizacaoAtual:
       animal.localizacaoAtual,

@@ -1,18 +1,31 @@
-export type SyncResult = {
-  status: "not_configured";
-  message: string;
-  animalsUpdated: number;
-  imagesUpdated: number;
-};
+import { mapSyncToInternal } from "@/modules/animals/mappers/animal-sync.mapper";
+import { mapSheetAnimal } from "@/modules/animals/mappers/sheet-animal.mapper";
+import { readAnimalsSheet } from "@/shared/integrations/google-sheets/google-sheets.service";
+import { SyncRepository } from "../repositories/sync.repository";
+import { SyncResult } from "../types/sync.type";
 
-/**
- * Ponto de orquestração da sincronização.
- */
-export async function runSync(): Promise<SyncResult> {
+export async function syncAnimals(): Promise<SyncResult> {
+  const sheet = await readAnimalsSheet();
+
+  const animals = sheet
+    .map(mapSheetAnimal)
+    .map(mapSyncToInternal);
+
+  const startedAt = new Date();
+  const syncRepository = new SyncRepository();
+
+  for (const animal of animals) {
+    await syncRepository.upsertAnimal(animal);
+  }
+
+  const finishedAt = new Date();
+
   return {
-    status: "not_configured",
-    message: "A sincronização automática ainda não foi configurada.",
-    animalsUpdated: 0,
-    imagesUpdated: 0,
+    animalsUpserted: animals.length,
+    startedAt,
+    finishedAt,
+    durationMs:
+      finishedAt.getTime() -
+      startedAt.getTime(),
   };
 }
