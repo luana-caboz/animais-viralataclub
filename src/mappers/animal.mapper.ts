@@ -1,32 +1,6 @@
 import { InternalAnimal } from "@/types/animal";
 import { AnimalDB } from "@/types/animal-db";
 
-function calcularIdade(
-  dataNascimento: string
-) {
-  const nascimento = new Date(dataNascimento);
-  const hoje = new Date();
-
-  let anos =
-    hoje.getFullYear() -
-    nascimento.getFullYear();
-
-  let meses =
-    hoje.getMonth() -
-    nascimento.getMonth();
-
-  if (meses < 0) {
-    anos--;
-    meses += 12;
-  }
-
-  if (anos <= 0) {
-    return `${meses} mês${meses !== 1 ? "es" : ""}`;
-  }
-
-  return `${anos} ano${anos !== 1 ? "s" : ""}`;
-}
-
 export function mapAnimal(
   animal: AnimalDB,
 ): InternalAnimal {
@@ -43,9 +17,7 @@ export function mapAnimal(
     dataNascimento:
       animal.data_nascimento,
 
-    idadeEstimada: calcularIdade(
-      animal.data_nascimento
-    ),
+    idadeEstimada: animal.idade_estimada,
 
     castrado: animal.castrado,
     vacinado: animal.vacinado,

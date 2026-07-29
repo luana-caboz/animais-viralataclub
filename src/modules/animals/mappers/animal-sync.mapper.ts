@@ -16,6 +16,7 @@ export function mapSyncToInternal(
     cores: animal.cores,
     raca: animal.raca,
     dataNascimento: animal.dataNascimento,
+    idadeEstimada: animal.idadeEstimada,
     castrado: animal.castrado,
     vacinado: animal.vacinado,
     vermifugado: animal.vermifugado,

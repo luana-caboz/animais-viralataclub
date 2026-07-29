@@ -8,6 +8,7 @@ export async function findAll() {
         *,
         animal_images(*)
     `)
+    .eq("visivel_no_site", true)
     .order("nome");
 }
 
