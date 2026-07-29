@@ -1,6 +1,6 @@
 import { google } from "googleapis";
+import { mapperAnimalFolder } from "../../../modules/sync/mappers/drive.mapper";
 import { getGoogleAuth } from "./client";
-import { parseAnimalFolder } from "./parser";
 
 export async function listFolder(folderId: string) {
   const drive = google.drive({
@@ -21,6 +21,8 @@ export async function listCategories() {
   const folders = await listFolder(
     process.env.GOOGLE_DRIVE_FOLDER_ID!
   );
+
+  console.log("pastas raiz:", folders);
 
   return folders.filter(
     (folder) =>
@@ -44,6 +46,8 @@ export async function listAnimalsFromDrive() {
     const categories =
         await listCategories();
 
+        console.log("categorias:", categories);
+
     const animals = [];
 
     for (const category of categories) {
@@ -56,10 +60,12 @@ export async function listAnimalsFromDrive() {
         const folders =
             await listAnimalFolders(category.id!);
 
+            console.log(`pastas das categorias ${category.name}:`, folders);
+
         for (const folder of folders) {
 
             const parsed =
-                parseAnimalFolder(folder.name!);
+                mapperAnimalFolder(folder.name!, status);
 
             if (!parsed) continue;
 
@@ -87,5 +93,26 @@ export async function listAnimalFolders(categoryId: string) {
       folder.mimeType ===
       "application/vnd.google-apps.folder"
   );
+}
+
+export async function downloadImage(
+  fileId: string
+): Promise<Buffer> {
+  const drive = google.drive({
+    version: "v3",
+    auth: getGoogleAuth(),
+  });
+
+  const response = await drive.files.get(
+    {
+      fileId,
+      alt: "media",
+    },
+    {
+      responseType: "arraybuffer",
+    }
+  );
+
+  return Buffer.from(response.data as ArrayBuffer);
 }
 
