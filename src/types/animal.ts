@@ -12,7 +12,7 @@ export type Animal = {
   personalidade: string;
   historia: string;
   fotos: AnimalImage[];
-  idadeEstimada?: string;
+  idadeEstimada: string;
   castrado: boolean;
   vacinado: boolean;
   vermifugado: boolean;

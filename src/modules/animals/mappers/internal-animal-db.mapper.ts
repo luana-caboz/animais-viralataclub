@@ -16,7 +16,7 @@ export function mapInternalToDatabase(
     data_nascimento:
       animal.dataNascimento || null,
 
-    idade_estimada: animal.idadeEstimada || null,
+    idade_estimada: animal.idadeEstimada,
 
     castrado: animal.castrado,
     vacinado: animal.vacinado,

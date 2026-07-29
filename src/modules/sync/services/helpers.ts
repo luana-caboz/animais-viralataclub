@@ -36,13 +36,25 @@ export function parseDate(
 ) {
   if (!value) return undefined;
 
-  const [dia, mes, ano] =
-    value.split("/");
+  const parts = value.trim().split("/");
 
-  if (!ano) return undefined;
+  if (parts.length === 3) {
+    const [dia, mes, ano] = parts;
 
-  return `${ano}-${mes.padStart(
-    2,
-    "0"
-  )}-${dia.padStart(2, "0")}`;
+    return `${ano}-${mes.padStart(
+      2,
+      "0"
+    )}-${dia.padStart(2, "0")}`;
+  }
+
+  if (parts.length === 2) {
+    const [mes, ano] = parts;
+
+    return `${ano}-${mes.padStart(
+      2,
+      "0"
+    )}-01`;
+  }
+
+  return undefined;
 }
