@@ -1,9 +1,21 @@
+import { syncAnimals } from "@/modules/sync/services/sync.service";
 import { NextResponse } from "next/server";
 
-import { runSync } from "@/services/sync/sync.service";
-
 export async function POST() {
-  const result = await runSync();
+  try {
+    const result = await syncAnimals();
 
-  return NextResponse.json(result);
+    return NextResponse.json(result);
+  } catch (error) {
+    console.error(error);
+
+    return NextResponse.json(
+      {
+        message: "Erro ao executar sincronização.",
+      },
+      {
+        status: 500,
+      }
+    );
+  }
 }
