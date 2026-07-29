@@ -18,7 +18,7 @@ export type AnimalSync = {
 
   dataNascimento?: string;
 
-  idadeEstimada?: string;
+  idadeEstimada: string;
 
   localizacaoAtual?: string;
 

@@ -15,12 +15,25 @@ export function getIdFromSlug(
   return slug.split("-").pop()?.toUpperCase();
 }
 
-export function formatarData(data: string) {
-  return new Date(data).toLocaleDateString(
+export function formatarData(
+  data?: string | null
+) {
+  if (!data) {
+    return "Data não informada";
+  }
+
+  const date = new Date(data);
+
+  if (isNaN(date.getTime())) {
+    return "Data não informada";
+  }
+
+  return new Intl.DateTimeFormat(
     "pt-BR",
     {
       month: "long",
       year: "numeric",
+      timeZone: "UTC",
     }
-  );
+  ).format(date);
 }
