@@ -1,7 +1,9 @@
 import { getIdFromSlug, slugifyAnimal } from "@/lib/slug";
-import { getAnimals } from "@/services/animal.service";
+import { getAnimals } from "@/modules/animals/services/animal.service";
 import Image from "next/image";
 import Link from "next/link";
+
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const animals = await getAnimals();

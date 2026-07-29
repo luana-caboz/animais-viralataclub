@@ -12,16 +12,17 @@ export type Animal = {
   personalidade: string;
   historia: string;
   fotos: AnimalImage[];
-  idadeEstimada?: string;
+  idadeEstimada: string;
   castrado: boolean;
   vacinado: boolean;
   vermifugado: boolean;
+
   condicoesSaude: string;
   caes: string;
   gatos: string;
   criancas: string;
-  dataNascimento: string;
-  dataResgate: string;
+  dataNascimento?: string;
+  dataResgate?: string;
 };
 
 export type InternalAnimal = Animal & {
@@ -35,6 +36,5 @@ export type InternalAnimal = Animal & {
   updatedFromSheetAt?: string;
   updatedManuallyAt?: string;
   origem?: "admin" | "sheet" | "api";
-  ativo?: boolean;
   visivelNoSite?: boolean;
 };

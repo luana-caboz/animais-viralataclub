@@ -1,5 +1,5 @@
-import { getAnimalBySlug } from "@/lib/animals";
 import { formatarData } from "@/lib/slug";
+import { getAnimalBySlug } from "@/modules/animals/services/animal.service";
 import {
   ClipboardList,
   HeartPulse,
@@ -8,6 +8,8 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+
+export const dynamic = "force-dynamic";
 
 type Props = {
   params: Promise<{
@@ -146,7 +148,7 @@ export default async function AnimalPage({
             <div className="mt-6 rounded-3xl bg-gradient-to-r from-blue-50 to-orange-50 p-5">
               <p className="text-lg text-slate-700">
                 🏡 Procurando uma família desde{" "}
-                <strong>{formatarData(animal.dataResgate)}</strong>
+                <strong>{animal.dataResgate ? formatarData(animal.dataResgate) : "Data não informada"}</strong>
               </p>
             </div>
 
