@@ -3,12 +3,6 @@ import { google } from "googleapis";
 import { getGoogleAuth } from "../google-drive/client";
 import { SheetAnimal } from "./types";
 
-function toBoolean(value?: string): boolean {
-  return ["true", "sim", "1"].includes(
-    value?.trim().toLowerCase() ?? ""
-  );
-}
-
 export async function readAnimalsSheet(): Promise<SheetAnimal[]> {
   const auth =
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -45,9 +39,9 @@ export async function readAnimalsSheet(): Promise<SheetAnimal[]> {
 
     localizacaoAtual: row[9] ?? "",
 
-    castrado: toBoolean(row[10]),
-    vacinado: toBoolean(row[11]),
-    vermifugado: toBoolean(row[12]),
+    castrado: row[10] ?? "",
+    vacinado: row[11] ?? "",
+    vermifugado: row[12] ?? "",
 
     condicoesSaude: row[13] ?? "",
 
@@ -73,6 +67,6 @@ export async function readAnimalsSheet(): Promise<SheetAnimal[]> {
 
     formulario: row[25] ?? "",
 
-    assinouTermo: toBoolean(row[26]),
+    assinouTermo: row[26] ?? "",
   }));
 }
