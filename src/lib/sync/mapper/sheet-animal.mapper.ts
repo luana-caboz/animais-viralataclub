@@ -1,5 +1,5 @@
+import { SheetAnimal } from "@/shared/integrations/google-sheets/types";
 import { InternalAnimal } from "@/types/animal";
-import { SheetAnimal } from "@/types/sheet-animal";
 
 function normalizeStatus(
   status: string
