@@ -1,6 +1,6 @@
 import { getIdFromSlug } from "@/lib/slug";
 import { mapAnimal } from "@/mappers/animal.mapper";
-import * as repository from "@/repositories/animal.repository";
+import * as repository from "@/modules/animals/repositories/animal.repository";
 
 export async function getAnimals() {
   try {
