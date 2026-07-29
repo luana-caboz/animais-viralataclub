@@ -2,7 +2,7 @@ export type AnimalImage = {
   id: string;
   animalId: string;
   url: string;
-  cloudinaryPublicId: string;
+  cloudinaryPublicId?: string;
   legenda?: string;
   ordem: number;
   principal: boolean;
