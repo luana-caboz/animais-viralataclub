@@ -13,7 +13,7 @@ export type AnimalImageDB = {
   animal_id: string;
 
   url: string;
-  cloudinary_public_id: string;
+  cloudinary_public_id?: string;
   legenda: string | null;
 
   ordem: number;
@@ -26,7 +26,7 @@ export type AnimalImageInsert = {
   animal_id: string;
 
   url: string;
-  cloudinary_public_id: string;
+  cloudinary_public_id?: string;
 
   legenda?: string | null;
 
