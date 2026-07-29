@@ -11,6 +11,7 @@ export type AnimalDB = {
   raca: string;
 
   data_nascimento: string;
+  idade_estimada: string;
 
   castrado: boolean;
   vacinado: boolean;
