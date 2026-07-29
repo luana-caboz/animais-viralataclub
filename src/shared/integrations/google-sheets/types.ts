@@ -13,9 +13,9 @@ export type SheetAnimal = {
 
   localizacaoAtual: string;
 
-  castrado: string;
-  vacinado: string;
-  vermifugado: string;
+  castrado: boolean;
+  vacinado: boolean;
+  vermifugado: boolean;
 
   condicoesSaude: string;
 
@@ -41,5 +41,5 @@ export type SheetAnimal = {
 
   formulario: string;
 
-  assinouTermo: string;
+  assinouTermo: boolean;
 };
