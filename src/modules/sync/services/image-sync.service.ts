@@ -18,7 +18,6 @@ export async function syncImages(): Promise<ImageSyncResult> {
 
     for (const [index, image] of animal.images.entries()) {
         try {
-            console.log(`Processando imagem ${image.name} do animal ${animal.animalId}`);
             const buffer = await downloadImage(image.id);
 
             if(buffer.length === 0) {
