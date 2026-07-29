@@ -1,6 +1,7 @@
 import { google } from "googleapis";
 import { mapperAnimalFolder } from "../../../modules/sync/mappers/drive.mapper";
 import { getGoogleAuth } from "./client";
+import { DriveImage } from "./types";
 
 export async function listFolder(folderId: string) {
   const drive = google.drive({
@@ -22,8 +23,6 @@ export async function listCategories() {
     process.env.GOOGLE_DRIVE_FOLDER_ID!
   );
 
-  console.log("pastas raiz:", folders);
-
   return folders.filter(
     (folder) =>
       folder.mimeType ===
@@ -33,20 +32,22 @@ export async function listCategories() {
 
 export async function listImages(
   animalFolderId: string
-) {
+): Promise<DriveImage[]> {
   const files =
     await listFolder(animalFolderId);
 
   return files.filter((file) =>
-    file.mimeType?.startsWith("image/")
-  );
+    file.mimeType?.startsWith("image/") && file.id && file.name && file.mimeType
+  ).map((file) => ({
+    id: file.id!,
+    name: file.name!,
+    mimeType: file.mimeType!,
+  }));
 }
 
 export async function listAnimalsFromDrive() {
     const categories =
         await listCategories();
-
-        console.log("categorias:", categories);
 
     const animals = [];
 
@@ -59,8 +60,6 @@ export async function listAnimalsFromDrive() {
 
         const folders =
             await listAnimalFolders(category.id!);
-
-            console.log(`pastas das categorias ${category.name}:`, folders);
 
         for (const folder of folders) {
 
@@ -113,6 +112,16 @@ export async function downloadImage(
     }
   );
 
-  return Buffer.from(response.data as ArrayBuffer);
+  const buffer = Buffer.from(
+    response.data as ArrayBuffer
+  );
+
+  if (buffer.length === 0) {
+    throw new Error(
+      `Arquivo ${fileId} retornou vazio do Google Drive.`
+    );
+  }
+
+  return buffer;
 }
 

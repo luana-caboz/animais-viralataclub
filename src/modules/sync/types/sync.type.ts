@@ -14,3 +14,11 @@ export type DriveAnimalFolder = {
   status: "DISPONIVEL" | "ADOTADO";
   images: DriveImage[];
 };
+
+export type ImageSyncResult = {
+  animalsProcessed: number;
+  imagesUploaded: number;
+  startedAt: Date;
+  finishedAt: Date;
+  durationMs: number;
+};
