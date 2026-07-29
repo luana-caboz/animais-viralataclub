@@ -1,8 +1,8 @@
 "use server";
 
-import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase-server";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export async function login(
   _prevState: {
@@ -19,14 +19,11 @@ export async function login(
   const password =
     formData.get("password") as string;
 
-  const { data, error } =
+  const { error } =
     await supabase.auth.signInWithPassword({
       email,
       password,
     });
-
-  console.log("LOGIN DATA", data);
-  console.log("LOGIN ERROR", error);
   
   if (error) {
     return {

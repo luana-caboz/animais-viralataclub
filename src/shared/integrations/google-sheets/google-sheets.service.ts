@@ -12,7 +12,6 @@ export async function readAnimalsSheet(): Promise<SheetAnimal[]> {
     version: "v4",
     auth,
   });
-console.log("Reading animals sheet..."+process.env.GOOGLE_SHEET_ID);
   const spreadsheetId =
     process.env.GOOGLE_SHEET_ID!;
 

@@ -1,10 +1,10 @@
-import { createClient } from "@/lib/supabase-server";
 import { mapInternalToDatabase } from "@/modules/animals/mappers/internal-animal-db.mapper";
+import { supabaseAdmin } from "@/shared/lib/supabase/admin";
 import { InternalAnimal } from "@/types/animal";
 
 export class SyncRepository {
   async upsertAnimal(payload: InternalAnimal) {
-    const supabase = await createClient();
+    const supabase = supabaseAdmin;
 
     const animal = mapInternalToDatabase(payload);
 
