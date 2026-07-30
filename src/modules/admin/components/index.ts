@@ -8,4 +8,6 @@ export { ImportExportActions } from "./ImportExportActions";
 export { default as LogoutButton } from "./LogoutButton";
 export { SearchInput } from "./SearchInput";
 export { SubmitButton } from "./SubmitButton";
+export { SyncButton } from "./SyncButton";
+export { SyncCard } from "./SyncCard";
 
