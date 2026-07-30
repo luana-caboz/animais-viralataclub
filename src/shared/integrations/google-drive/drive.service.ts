@@ -1,3 +1,5 @@
+import { logger } from "@/shared/logger";
+import { LogModules } from "@/shared/logger/modules";
 import { google } from "googleapis";
 import { mapperAnimalFolder } from "../../../modules/sync/mappers/drive.mapper";
 import { getGoogleAuth } from "./client";
@@ -21,6 +23,14 @@ export async function listFolder(folderId: string) {
 export async function listCategories() {
   const folders = await listFolder(
     process.env.GOOGLE_DRIVE_FOLDER_ID!
+  );
+
+  logger.info(
+    "Categorias listadas do Google Drive",
+    {
+      module: LogModules.GoogleDrive,
+      categories: folders.length,
+    }
   );
 
   return folders.filter(
@@ -80,6 +90,13 @@ export async function listAnimalsFromDrive() {
             });
         }
     }
+    logger.info(
+        "Animais listados do Google Drive",
+        {
+          module: LogModules.GoogleDrive,
+          animalCount: animals.length,
+        }
+      );
 
     return animals;
 }

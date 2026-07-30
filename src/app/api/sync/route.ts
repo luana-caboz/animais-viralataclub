@@ -1,9 +1,9 @@
-import { syncAnimals } from "@/modules/sync/services/sync.service";
+import { runFullSync } from "@/modules/sync/services/sync-orchestrator.service";
 import { NextResponse } from "next/server";
 
 export async function POST() {
   try {
-    const result = await syncAnimals();
+    const result = await runFullSync();
 
     return NextResponse.json(result);
   } catch (error) {
