@@ -21,4 +21,15 @@ export type ImageSyncResult = {
   startedAt: Date;
   finishedAt: Date;
   durationMs: number;
+  errors?: string[];
+};
+
+export type FullSyncResult = {
+  animalsUpdated: number;
+  imagesUpdated: number;
+  startedAt: Date;
+  finishedAt: Date;
+  durationMs: number;
+  success: boolean;
+  warnings?: string[];
 };
