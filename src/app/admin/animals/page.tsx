@@ -1,6 +1,6 @@
 import { getAnimals } from "@/modules/animals/services/animal.service";
 
-import { AnimalFilters, AnimalTable, DashboardCards, ImportExportActions } from "@/modules/admin/components";
+import { AnimalFilters, AnimalTable, DashboardCards, ImportExportActions, SyncButton, SyncCard } from "@/modules/admin/components";
 
 export const dynamic = "force-dynamic";
 
@@ -59,7 +59,12 @@ export default async function AdminPage({
         <DashboardCards {...stats} />
 
         <div className="mt-8">
+        <SyncCard />
+        </div>
+
+        <div className="mt-8">
           <ImportExportActions />
+          <SyncButton />
         </div>
 
         <div className="mt-8">
