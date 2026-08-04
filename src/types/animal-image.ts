@@ -14,6 +14,11 @@ export type AnimalImageDB = {
 
   url: string;
   cloudinary_public_id?: string;
+
+  drive_file_id?: string;
+  drive_md5?: string;
+  drive_modified_time?: string;
+
   legenda: string | null;
 
   ordem: number;
@@ -27,6 +32,10 @@ export type AnimalImageInsert = {
 
   url: string;
   cloudinary_public_id?: string;
+
+  drive_file_id?: string;
+  drive_md5?: string;
+  drive_modified_time?: string;
 
   legenda?: string | null;
 
