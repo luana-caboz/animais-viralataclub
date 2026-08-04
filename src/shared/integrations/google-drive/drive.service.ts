@@ -13,7 +13,7 @@ export async function listFolder(folderId: string) {
 
   const { data } = await drive.files.list({
     q: `'${folderId}' in parents and trashed=false`,
-    fields: "files(id,name,mimeType)",
+    fields: "files(id,name,mimeType,modifiedTime,md5Checksum)",
     pageSize: 1000,
   });
 
@@ -52,6 +52,8 @@ export async function listImages(
     id: file.id!,
     name: file.name!,
     mimeType: file.mimeType!,
+    modifiedTime: file.modifiedTime ?? undefined,
+    md5Checksum: file.md5Checksum ?? undefined,
   }));
 }
 

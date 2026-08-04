@@ -3,7 +3,7 @@ import { AnimalImageInsert } from "@/types/animal-image";
 
 export async function findImagesByAnimalId(
   animalId: string
-): Promise<AnimalImageInsert[]> {
+) {
   const supabase = supabaseAdmin;
 
   const { data, error } = await supabase
@@ -19,29 +19,34 @@ export async function findImagesByAnimalId(
   return data;
 }
 
-export async function createAnimalImages(
-  images: AnimalImageInsert[]
-) {
+export async function findAllAnimalImages() {
   const supabase = supabaseAdmin;
 
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("animal_images")
-    .insert(images);
+    .select("*")
+    .order("ordem");
 
   if (error) {
     throw error;
   }
+
+  return data;
 }
 
-export async function deleteAnimalImages(
-  animalId: string
-) {
-  const supabase = await supabaseAdmin;
+export async function replaceAnimalImages(
+  animalId: string,
+  images: AnimalImageInsert[]
+): Promise<void> {
+  const supabase = supabaseAdmin;
 
-  const { error } = await supabase
-    .from("animal_images")
-    .delete()
-    .eq("animal_id", animalId);
+  const { error } = await supabase.rpc(
+    "replace_animal_images",
+    {
+      p_animal_id: animalId,
+      p_images: images,
+    }
+  );
 
   if (error) {
     throw error;

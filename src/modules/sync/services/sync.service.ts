@@ -25,7 +25,6 @@ export async function syncAnimals(): Promise<SyncResult> {
   let animalsUpserted = 0;
   let animalsRemoved = 0;
 
-  // Upserts
   for (const animal of animals) {
     try {
       await syncRepository.upsertAnimal(animal);
@@ -50,14 +49,12 @@ export async function syncAnimals(): Promise<SyncResult> {
     }
   }
 
-  // Descobre quais animais precisam ser removidos
   try {
     const animalsToDelete =
       await syncRepository.getAnimalsToDelete(
         animals.map((animal) => animal.id)
       );
 
-    // Deletes
     for (const animal of animalsToDelete) {
       try {
         await syncRepository.deleteAnimal(animal.id);
