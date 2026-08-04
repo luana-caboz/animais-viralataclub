@@ -4,7 +4,7 @@ import { InternalAnimal } from "@/types/animal";
 
 type AnimalToDelete = {
   id: string;
-  name: string;
+  nome: string;
 };
 
 export class SyncRepository {
@@ -29,7 +29,7 @@ export class SyncRepository {
   ): Promise<AnimalToDelete[]> {
     const { data, error } = await this.supabase
       .from("animals")
-      .select("id, name");
+      .select("id, nome");
 
     if (error) {
       throw error;
