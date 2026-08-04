@@ -66,7 +66,7 @@ export async function syncAnimals(): Promise<SyncResult> {
           {
             module: LogModules.SyncAnimals,
             animalId: animal.id,
-            animalName: animal.name,
+            animalName: animal.nome,
           }
         );
       } catch (error) {
@@ -75,7 +75,7 @@ export async function syncAnimals(): Promise<SyncResult> {
           {
             module: LogModules.SyncAnimals,
             animalId: animal.id,
-            animalName: animal.name,
+            animalName: animal.nome,
             error,
           }
         );
@@ -83,7 +83,7 @@ export async function syncAnimals(): Promise<SyncResult> {
         errors.push({
           operation: "delete",
           animalId: animal.id,
-          animalName: animal.name,
+          animalName: animal.nome,
           error:
             error instanceof Error
               ? error.message
