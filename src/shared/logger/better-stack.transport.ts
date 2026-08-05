@@ -15,6 +15,13 @@ export class BetterStackTransport
     entry: LogEntry
   ): Promise<void> {
 
+    const ENABLE_BETTER_STACK =
+      process.env.ENABLE_BETTER_STACK === "true";
+
+    if (!ENABLE_BETTER_STACK) {
+      return;
+    }
+
     const context = {
       ...entry.metadata,
       timestamp: entry.timestamp,

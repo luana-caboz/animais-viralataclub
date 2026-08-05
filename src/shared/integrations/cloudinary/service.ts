@@ -15,6 +15,7 @@ export async function uploadImage(
         folder: "animals",
         public_id: `${animalId}/${filename.replace(/\.[^.]+$/, "")}`,
         overwrite: true,
+        invalidate: true,
         resource_type: "image",
       },
       (error, result) => {
