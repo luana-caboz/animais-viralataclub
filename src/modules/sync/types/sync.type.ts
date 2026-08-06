@@ -51,3 +51,8 @@ export type SyncImagesBatchResult = {
   hasMore: boolean;
   errors: string[];
 };
+
+export type SyncImagesInput = {
+  start: number;
+  limit: number;
+};
