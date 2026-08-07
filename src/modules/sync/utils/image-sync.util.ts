@@ -16,7 +16,7 @@ export function hasImagesChanged(
     ]),
   );
 
-  for (const driveImage of driveImages) {
+  for (const [index, driveImage] of driveImages.entries()) {
     const dbImage = dbByDriveId.get(
       driveImage.id,
     );
@@ -28,6 +28,17 @@ export function hasImagesChanged(
     if (
       dbImage.drive_md5 !==
       driveImage.md5Checksum
+    ) {
+      return true;
+    }
+
+    if (dbImage.ordem !== index) {
+      return true;
+    }
+
+    if (
+      dbImage.principal !==
+      (index === 0)
     ) {
       return true;
     }

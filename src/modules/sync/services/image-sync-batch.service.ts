@@ -1,90 +1,69 @@
 import { findExistingAnimalIds } from "@/modules/animals/repositories/animal.repository";
+import { DriveAnimal } from "@/shared/integrations/google-drive/types";
 import { logger } from "@/shared/logger";
 import { LogModules } from "@/shared/logger/modules";
 import { ImageBatchResult } from "../types/sync.type";
 import { syncAnimalImages } from "./sync-animal-images.service";
 
-type DriveAnimal = Awaited<
-  ReturnType<
-    typeof import("@/shared/integrations/google-drive/drive.service").listAnimalsFromDrive
-  >
->[number];
-
 export async function syncImagesBatch(
   animals: DriveAnimal[],
-  start: number,
-  limit: number,
 ): Promise<ImageBatchResult> {
-  const batch = animals.slice(
-    start,
-    start + limit,
+  if (animals.length === 0) {
+    return {
+      processedAnimals: 0,
+      uploadedImages: 0,
+      errors: [],
+    };
+  }
+
+  const existingAnimals = await findExistingAnimalIds(
+    animals.map((animal) => animal.animalId),
   );
 
-  if (batch.length === 0) {
-  return {
-    processedAnimals: 0,
-    uploadedImages: 0,
-    errors: [],
-    nextStart: start,
-    hasMore: false,
-  };
-}
-
-  const existingAnimals =
-  await findExistingAnimalIds(
-    batch.map(
-      (animal) => animal.animalId,
-    ),
-  );
   let uploadedImages = 0;
 
   const errors: string[] = [];
 
-  logger.info(
-    "Processando lote de imagens",
-    {
-      module: LogModules.SyncImages,
-      start,
-      limit,
-      batchSize: batch.length,
-    },
-  );
+  logger.info("Processando lote de imagens", {
+    module: LogModules.SyncImages,
+    batchSize: animals.length,
+  });
 
- for (const animal of batch) {
-  if (
-    !existingAnimals.has(
-      animal.animalId,
-    )
-  ) {
-    logger.warn(
-      "Animal encontrado no Drive, mas não existe no banco.",
-      {
+  for (const animal of animals) {
+    if (!existingAnimals.has(animal.animalId)) {
+      logger.warn("Animal encontrado no Drive, mas não existe no banco.", {
         module: LogModules.SyncImages,
         animalId: animal.animalId,
-        animalName:
-          animal.animalName,
+        animalName: animal.animalName,
         folderId: animal.folderId,
-      },
-    );
+      });
 
-    continue;
+      continue;
+    }
+
+    try {
+      const result = await syncAnimalImages(animal);
+
+      uploadedImages += result.uploaded;
+
+      errors.push(...result.errors);
+    } catch (error) {
+      const message = `Erro ao sincronizar imagens do animal ${animal.animalId}`;
+
+      logger.error(message, {
+        module: LogModules.SyncImages,
+        animalId: animal.animalId,
+        animalName: animal.animalName,
+        error: error instanceof Error ? error.message : String(error),
+      });
+
+      errors.push(message);
+    }
   }
-
-    const result =
-      await syncAnimalImages(animal);
-
-    uploadedImages += result.uploaded;
-
-    errors.push(...result.errors);
-  }
-
-  const nextStart = start + batch.length;
 
   return {
-    processedAnimals: batch.length,
+    processedAnimals: animals.length,
     uploadedImages,
     errors,
-    nextStart,
-    hasMore: nextStart < animals.length,
   };
 }
