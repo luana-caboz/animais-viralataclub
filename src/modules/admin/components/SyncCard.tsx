@@ -2,45 +2,31 @@
 
 import { useImageSync } from "@/hooks/use-image-sync";
 import { CheckCircle2, RefreshCw, XCircle } from "lucide-react";
-import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { SyncProgress } from "./SyncProgress";
 
-type SyncState = {
-  animalsUpdated: number;
-  imagesUpdated: number;
-  durationMs: number;
-  success: boolean;
-};
-
 export function SyncCard() {
-  const [isPending, startTransition] = useTransition();
 
-  const [lastSync, setLastSync] = useState<SyncState | null>(null);
+const {
+  executeFullSync,
+  progress,
+  lastSync,
+  isRunning,
+} = useImageSync();
 
-  const { executeFullSync, progress, isRunning } = useImageSync();
+async function handleSync() {
+  try {
+    await executeFullSync();
 
-  function handleSync() {
-    startTransition(async () => {
-      try {
-        const result = await executeFullSync();
-
-        setLastSync({
-          animalsUpdated: result.animalsUpdated,
-
-          imagesUpdated: result.imagesUpdated,
-
-          durationMs: result.durationMs,
-
-          success: result.success,
-        });
-
-        toast.success("Sincronização concluída.");
-      } catch {
-        toast.error("Erro durante a sincronização.");
-      }
-    });
+    toast.success(
+      "Sincronização concluída.",
+    );
+  } catch {
+    toast.error(
+      "Erro durante a sincronização.",
+    );
   }
+}
 
   return (
     <section className="rounded-2xl border bg-white p-6 shadow-sm">
@@ -54,7 +40,9 @@ export function SyncCard() {
         </div>
 
         <button
-          onClick={handleSync}
+onClick={() => {
+  void handleSync();
+}}
           disabled={isRunning}
           className="flex items-center gap-2 rounded-lg bg-[#0f4fb6] px-4 py-2 text-white transition hover:bg-[#0d469f] disabled:opacity-50"
         >

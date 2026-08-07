@@ -56,3 +56,11 @@ export type SyncImagesInput = {
   start: number;
   limit: number;
 };
+
+export type ImageBatchResult = {
+  processedAnimals: number;
+  uploadedImages: number;
+  errors: string[];
+  hasMore: boolean;
+  nextStart: number;
+};

@@ -6,15 +6,25 @@ import { syncNow } from "@/app/actions/sync.action";
 
 const IMAGE_BATCH_SIZE = 20;
 
-type SyncProgress = {
+export type SyncProgress = {
   processedAnimals: number;
   totalAnimals: number;
   uploadedImages: number;
 };
 
+type SyncState = {
+  animalsUpdated: number;
+  imagesUpdated: number;
+  durationMs: number;
+  success: boolean;
+};
+
 export function useImageSync() {
   const [progress, setProgress] =
     useState<SyncProgress | null>(null);
+
+  const [lastSync, setLastSync] =
+    useState<SyncState | null>(null);
 
   const [isRunning, setIsRunning] =
     useState(false);
@@ -23,11 +33,13 @@ export function useImageSync() {
     useCallback(async () => {
       setIsRunning(true);
 
+      setProgress(null);
+
       try {
         const animalsResult =
           await syncNow();
 
-        let imagesUpdated = 0;
+        let uploadedImages = 0;
 
         let start = 0;
 
@@ -40,7 +52,7 @@ export function useImageSync() {
               IMAGE_BATCH_SIZE,
             );
 
-          imagesUpdated +=
+          uploadedImages +=
             batch.uploadedImages;
 
           totalAnimals =
@@ -51,25 +63,43 @@ export function useImageSync() {
 
           setProgress({
             processedAnimals:
-              Math.min(start, totalAnimals),
-
+              Math.min(
+                start,
+                totalAnimals,
+              ),
             totalAnimals,
-
-            uploadedImages:
-              imagesUpdated,
+            uploadedImages,
           });
 
           if (!batch.hasMore) {
             break;
           }
+
+          await new Promise<void>(
+            (resolve) =>
+              setTimeout(resolve, 0),
+          );
         }
 
         await revalidatePathAction();
 
-        return {
-          ...animalsResult,
-          imagesUpdated,
+        const result = {
+          animalsUpdated:
+            animalsResult.animalsUpdated,
+
+          imagesUpdated:
+            uploadedImages,
+
+          durationMs:
+            animalsResult.durationMs,
+
+          success:
+            animalsResult.success,
         };
+
+        setLastSync(result);
+
+        return result;
       } finally {
         setIsRunning(false);
       }
@@ -78,6 +108,7 @@ export function useImageSync() {
   return {
     executeFullSync,
     progress,
+    lastSync,
     isRunning,
   };
 }

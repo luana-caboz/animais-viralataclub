@@ -1,5 +1,7 @@
+import { findExistingAnimalIds } from "@/modules/animals/repositories/animal.repository";
 import { logger } from "@/shared/logger";
 import { LogModules } from "@/shared/logger/modules";
+import { ImageBatchResult } from "../types/sync.type";
 import { syncAnimalImages } from "./sync-animal-images.service";
 
 type DriveAnimal = Awaited<
@@ -7,14 +9,6 @@ type DriveAnimal = Awaited<
     typeof import("@/shared/integrations/google-drive/drive.service").listAnimalsFromDrive
   >
 >[number];
-
-export type ImageBatchResult = {
-  processedAnimals: number;
-  uploadedImages: number;
-  errors: string[];
-  hasMore: boolean;
-  nextStart: number;
-};
 
 export async function syncImagesBatch(
   animals: DriveAnimal[],
@@ -26,6 +20,22 @@ export async function syncImagesBatch(
     start + limit,
   );
 
+  if (batch.length === 0) {
+  return {
+    processedAnimals: 0,
+    uploadedImages: 0,
+    errors: [],
+    nextStart: start,
+    hasMore: false,
+  };
+}
+
+  const existingAnimals =
+  await findExistingAnimalIds(
+    batch.map(
+      (animal) => animal.animalId,
+    ),
+  );
   let uploadedImages = 0;
 
   const errors: string[] = [];
@@ -40,7 +50,26 @@ export async function syncImagesBatch(
     },
   );
 
-  for (const animal of batch) {
+ for (const animal of batch) {
+  if (
+    !existingAnimals.has(
+      animal.animalId,
+    )
+  ) {
+    logger.warn(
+      "Animal encontrado no Drive, mas não existe no banco.",
+      {
+        module: LogModules.SyncImages,
+        animalId: animal.animalId,
+        animalName:
+          animal.animalName,
+        folderId: animal.folderId,
+      },
+    );
+
+    continue;
+  }
+
     const result =
       await syncAnimalImages(animal);
 
