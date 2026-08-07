@@ -3,7 +3,7 @@ import { DriveImage } from "@/shared/integrations/google-drive/types";
 export type SyncResult = {
   animalsUpserted: number;
   animalsRemoved: number;
-  errors?: SyncError[];
+  errors: SyncError[];
   startedAt: Date;
   finishedAt: Date;
   durationMs: number;
@@ -41,4 +41,24 @@ export type FullSyncResult = {
   durationMs: number;
   success: boolean;
   warnings?: string[];
+};
+
+export type SyncImagesBatchResult = {
+  processedAnimals: number;
+  uploadedImages: number;
+  totalAnimals: number;
+  nextStart: number;
+  hasMore: boolean;
+  errors: string[];
+};
+
+export type SyncImagesInput = {
+  start: number;
+  limit: number;
+};
+
+export type ImageBatchResult = {
+  processedAnimals: number;
+  uploadedImages: number;
+  errors: string[];
 };
