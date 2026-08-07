@@ -1,11 +1,6 @@
 import { formatarData } from "@/lib/slug";
 import { getAnimalBySlug } from "@/modules/animals/services/animal.service";
-import {
-  ClipboardList,
-  HeartPulse,
-  PawPrint,
-  Users,
-} from "lucide-react";
+import { ClipboardList, HeartPulse, PawPrint, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -17,18 +12,14 @@ type Props = {
   }>;
 };
 
-export default async function AnimalPage({
-  params,
-}: Props) {
+export default async function AnimalPage({ params }: Props) {
   const { slug } = await params;
   const animal = await getAnimalBySlug(slug);
 
   if (!animal) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#faf8f4]">
-        <h1 className="text-2xl font-bold">
-          Animal não encontrado 😢
-        </h1>
+        <h1 className="text-2xl font-bold">Animal não encontrado 😢</h1>
       </main>
     );
   }
@@ -60,10 +51,7 @@ export default async function AnimalPage({
         </div>
 
         <div className="mx-auto flex max-w-6xl items-center px-6 py-4">
-          <Link
-            href="/"
-            className="flex items-center gap-4"
-          >
+          <Link href="/" className="flex items-center gap-4">
             <Image
               src="/logo.png"
               alt="Vira Lata Club"
@@ -73,12 +61,8 @@ export default async function AnimalPage({
             />
 
             <h1 className="text-2xl font-extrabold">
-              <span className="text-[#0f4fb6]">
-                VIRA LATA
-              </span>{" "}
-              <span className="text-[#f58220]">
-                CLUB
-              </span>
+              <span className="text-[#0f4fb6]">VIRA LATA</span>{" "}
+              <span className="text-[#f58220]">CLUB</span>
             </h1>
           </Link>
         </div>
@@ -90,37 +74,29 @@ export default async function AnimalPage({
         <div className="grid gap-8 lg:grid-cols-[40%_60%]">
           {/* FOTO */}
 
-          <div>
-            <div className="relative h-[520px] overflow-hidden rounded-[32px] bg-gradient-to-br from-[#edf4ff] to-[#fff3e8] shadow-2xl">
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-
-              <div className="absolute left-5 top-5 z-20 rounded-full bg-[#f58220] px-5 py-2 font-semibold text-white shadow-lg">
-                🏠 Procuro uma família
+          <div className="relative h-[520px] overflow-hidden rounded-[32px] bg-[#cfe7f7] shadow-2xl">
+            {(animal.fotos?.[0]?.url ?? "").trim() ? (
+              <Image
+                src={animal.fotos?.[0]?.url ?? ""}
+                alt={animal.nome}
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 40vw"
+                className="
+        object-cover
+        object-[center_42%]
+      "
+              />
+            ) : (
+              <div className="flex h-full items-center justify-center text-8xl">
+                🐶
               </div>
+            )}
 
-              {(animal.fotos?.[0]?.url ?? "").trim() ? (
-                <>
-                  {/* fundo desfocado */}
-                  <Image
-                    src={animal.fotos?.[0]?.url ?? ""}
-                    alt=""
-                    fill
-                    className="object-cover blur-2xl scale-125 opacity-25"
-                  />
+            <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/20 via-black/5 to-transparent" />
 
-                  {/* foto principal */}
-                  <Image
-                    src={animal.fotos?.[0]?.url ?? ""}
-                    alt={animal.nome}
-                    fill
-                    className="object-contain p-6"
-                  />
-                </>
-              ) : (
-                <div className="flex h-full items-center justify-center text-8xl">
-                  🐶
-                </div>
-              )}
+            <div className="absolute left-5 top-5 z-20 rounded-full bg-[#f58220] px-5 py-2 font-semibold text-white shadow-lg">
+              🏠 Procuro uma família
             </div>
           </div>
 
@@ -148,7 +124,11 @@ export default async function AnimalPage({
             <div className="mt-6 rounded-3xl bg-gradient-to-r from-blue-50 to-orange-50 p-5">
               <p className="text-lg text-slate-700">
                 🏡 Procurando uma família desde{" "}
-                <strong>{animal.dataResgate ? formatarData(animal.dataResgate) : "Data não informada"}</strong>
+                <strong>
+                  {animal.dataResgate
+                    ? formatarData(animal.dataResgate)
+                    : "Data não informada"}
+                </strong>
               </p>
             </div>
 
@@ -207,7 +187,9 @@ export default async function AnimalPage({
 
               <p>{animal.vacinado ? "✅ Vacinado" : "❌ Não vacinado"}</p>
 
-              <p>{animal.vermifugado ? "✅ Vermifugado" : "❌ Não vermifugado"}</p>
+              <p>
+                {animal.vermifugado ? "✅ Vermifugado" : "❌ Não vermifugado"}
+              </p>
 
               <p>
                 <strong>Condição:</strong> {animal.condicoesSaude}
@@ -223,12 +205,10 @@ export default async function AnimalPage({
             </h3>
 
             <div className="mb-6 flex flex-wrap gap-3">
-              {animal.personalidade
-                ?.split(",")
-                ?.map((item) => (
-                  <span
-                    key={item}
-                    className="
+              {animal.personalidade?.split(",")?.map((item) => (
+                <span
+                  key={item}
+                  className="
                       rounded-full
                       bg-[#edf4ff]
                       px-4
@@ -236,15 +216,14 @@ export default async function AnimalPage({
                       font-medium
                       text-[#0f4fb6]
                     "
-                  >
-                    {item.trim()}
-                  </span>
-                ))}
+                >
+                  {item.trim()}
+                </span>
+              ))}
             </div>
 
             <p className="text-lg">
-              <strong>Energia:</strong>{" "}
-              {animal.energia}
+              <strong>Energia:</strong> {animal.energia}
             </p>
           </div>
 
@@ -266,7 +245,7 @@ export default async function AnimalPage({
           </div>
         </div>
       </div>
-     <div className="fixed bottom-6 right-6 z-50">
+      <div className="fixed bottom-6 right-6 z-50">
         <a
           href="https://docs.google.com/forms/d/e/1FAIpQLSdSci6Hras_nxwBDkXJ2RIhNIQKSnLREJbZIzEpBLjIHdtqpg/viewform"
           target="_blank"
