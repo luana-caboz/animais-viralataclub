@@ -5,6 +5,7 @@ export type AnimalSync = {
 
   status:
     | "DISPONIVEL"
+    | "INDISPONIVEL"
     | "ADOTADO"
     | "EM_TRATAMENTO";
 
