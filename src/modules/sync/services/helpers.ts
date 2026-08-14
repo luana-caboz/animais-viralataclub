@@ -1,3 +1,5 @@
+import { logger } from "@/shared/logger";
+
 export function parseBoolean(value?: string) {
   if (!value) return false;
 
@@ -26,8 +28,14 @@ export function parseStatus(
     case "Em tratamento":
       return "EM_TRATAMENTO";
 
+    case "Indisponível":
+      return "INDISPONIVEL";  
+
     default:
-      return "DISPONIVEL";
+      logger.warn(
+        `Status desconhecido: ${status}`
+      );
+      return "INDISPONIVEL";
   }
 }
 
