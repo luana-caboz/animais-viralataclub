@@ -1,4 +1,5 @@
 import { formatarData } from "@/lib/slug";
+import { AnimalShare } from "@/modules/admin/components/AnimalShare";
 import { getAnimalBySlug } from "@/modules/animals/services/animal.service";
 import { ClipboardList, HeartPulse, PawPrint, Users } from "lucide-react";
 import Image from "next/image";
@@ -119,6 +120,17 @@ export default async function AnimalPage({ params }: Props) {
               <span className="rounded-full bg-green-100 px-4 py-2 font-medium text-green-700">
                 {animal.idadeEstimada}
               </span>
+            </div>
+
+            <div className="mt-6">
+              <AnimalShare
+                animal={{
+                  nome: animal.nome,
+                  sexo: animal.sexo,
+                  porte: animal.porte,
+                  idadeEstimada: animal.idadeEstimada,
+                }}
+              />
             </div>
 
             <div className="mt-6 rounded-3xl bg-gradient-to-r from-blue-50 to-orange-50 p-5">
