@@ -2,6 +2,7 @@ import { formatarData } from "@/lib/slug";
 import { AnimalShare } from "@/modules/admin/components/AnimalShare";
 import { getAnimalBySlug } from "@/modules/animals/services/animal.service";
 import { ClipboardList, HeartPulse, PawPrint, Users } from "lucide-react";
+import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -12,6 +13,41 @@ type Props = {
     slug: string;
   }>;
 };
+
+export async function generateMetadata({
+  params,
+}: Props): Promise<Metadata> {
+  const { slug } = await params;
+
+  const animal = await getAnimalBySlug(slug);
+
+  if (!animal) {
+    return {
+      title: "Animal não encontrado | Vira Lata Club",
+      description: "Conheça os animais disponíveis para adoção.",
+    };
+  }
+
+  const infos = [
+    animal.sexo,
+    animal.porte ? `Porte ${animal.porte}` : null,
+    animal.idadeEstimada,
+  ]
+    .filter(Boolean)
+    .join(" • ");
+
+  return {
+    title: `${animal.nome} para adoção | Vira Lata Club`,
+
+    description: `${animal.nome} está procurando uma família! ${infos}. Conheça sua história e ajude compartilhando.`,
+
+    openGraph: {
+      title: `${animal.nome} está procurando uma família 🐾`,
+      description: `${infos}. Conheça ${animal.nome} e ajude a encontrar uma família.`,
+      type: "website",
+    },
+  };
+}
 
 export default async function AnimalPage({ params }: Props) {
   const { slug } = await params;
