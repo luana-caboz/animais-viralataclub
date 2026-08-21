@@ -185,7 +185,7 @@ export default async function AnimalPage({ params }: Props) {
             <div className="mt-8 rounded-[32px] border border-slate-100 bg-white p-8 shadow-lg">
               <h2 className="flex items-center gap-3 text-2xl font-bold text-[#0f4fb6]">
                 <PawPrint size={28} />
-                Conheça o {animal.nome}
+                Conheça {animal.nome}
               </h2>
 
               <p className="mt-5 text-[18px] leading-8 text-slate-600">
