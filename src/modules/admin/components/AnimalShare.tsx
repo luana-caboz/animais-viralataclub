@@ -1,9 +1,12 @@
 "use client";
 
-import { Check, Copy, MessageCircle, Share2, X } from "lucide-react";
+import { Check, Copy, Loader2, MessageCircle, Share2, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { InstagramIcon } from "./InstagramIcon";
 
 type AnimalShareProps = {
+  slug: string;
+
   animal: {
     nome: string;
     sexo?: string | null;
@@ -12,9 +15,15 @@ type AnimalShareProps = {
   };
 };
 
-export function AnimalShare({ animal }: AnimalShareProps) {
+export function AnimalShare({ slug, animal }: AnimalShareProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  const [instagramFile, setInstagramFile] = useState<File | null>(null);
+
+  const [preparingInstagram, setPreparingInstagram] = useState(false);
+
+  const [shareError, setShareError] = useState<string | null>(null);
 
   function getShareUrl() {
     return window.location.href;
@@ -46,6 +55,104 @@ ${getShareUrl()}`;
     window.open(url, "_blank", "noopener,noreferrer");
   }
 
+  async function prepareInstagramShare() {
+    if (preparingInstagram) {
+      return;
+    }
+
+    try {
+      setPreparingInstagram(true);
+      setShareError(null);
+
+      const response = await fetch(
+        `/api/share/animal/${encodeURIComponent(slug)}`,
+      );
+
+      if (!response.ok) {
+        throw new Error("Não foi possível gerar a imagem.");
+      }
+
+      const blob = await response.blob();
+
+      const nomeArquivo = animal.nome
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "");
+
+      const file = new File([blob], `${nomeArquivo}-adocao.png`, {
+        type: "image/png",
+      });
+
+      setInstagramFile(file);
+    } catch (error) {
+      console.error("Erro ao preparar imagem para Instagram:", error);
+
+      setShareError("Não foi possível preparar a arte para compartilhamento.");
+    } finally {
+      setPreparingInstagram(false);
+    }
+  }
+
+  async function sharePreparedInstagram() {
+    if (!instagramFile) {
+      return;
+    }
+
+    try {
+      setShareError(null);
+
+      if (typeof navigator.share !== "function") {
+        setShareError(
+          "O compartilhamento não é suportado neste navegador. Tente pelo celular.",
+        );
+
+        return;
+      }
+
+      if (
+        typeof navigator.canShare === "function" &&
+        !navigator.canShare({
+          files: [instagramFile],
+        })
+      ) {
+        setShareError(
+          "Este navegador não suporta o compartilhamento de imagens. Tente pelo celular.",
+        );
+
+        return;
+      }
+
+      await navigator.share({
+        files: [instagramFile],
+        title: `${animal.nome} para adoção`,
+        text: `${animal.nome} está procurando uma família.`,
+      });
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        return;
+      }
+
+      console.error("Erro ao compartilhar imagem:", error);
+
+      setShareError("Não foi possível abrir o compartilhamento.");
+    }
+  }
+
+  function handleInstagramClick() {
+    if (preparingInstagram) {
+      return;
+    }
+
+    if (instagramFile) {
+      void sharePreparedInstagram();
+      return;
+    }
+
+    void prepareInstagramShare();
+  }
+
   async function copyLink() {
     try {
       await navigator.clipboard.writeText(getShareUrl());
@@ -60,6 +167,11 @@ ${getShareUrl()}`;
     }
   }
 
+  function closeModal() {
+    setIsOpen(false);
+    setShareError(null);
+  }
+
   useEffect(() => {
     if (!isOpen) {
       return;
@@ -68,6 +180,7 @@ ${getShareUrl()}`;
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
         setIsOpen(false);
+        setShareError(null);
       }
     }
 
@@ -82,7 +195,10 @@ ${getShareUrl()}`;
     <>
       <button
         type="button"
-        onClick={() => setIsOpen(true)}
+        onClick={() => {
+          setShareError(null);
+          setIsOpen(true);
+        }}
         className="
           inline-flex
           items-center
@@ -120,7 +236,7 @@ ${getShareUrl()}`;
             sm:items-center
             sm:px-4
           "
-          onClick={() => setIsOpen(false)}
+          onClick={closeModal}
         >
           <div
             role="dialog"
@@ -145,11 +261,15 @@ ${getShareUrl()}`;
                 >
                   Compartilhe {animal.nome} 💛
                 </h2>
+
+                <p className="mt-2 text-sm leading-6 text-slate-500">
+                  Ajude {animal.nome} a chegar até uma nova família.
+                </p>
               </div>
 
               <button
                 type="button"
-                onClick={() => setIsOpen(false)}
+                onClick={closeModal}
                 aria-label="Fechar"
                 className="
                   flex
@@ -170,6 +290,7 @@ ${getShareUrl()}`;
             </div>
 
             <div className="mt-7 space-y-3">
+              {/* WHATSAPP */}
               <button
                 type="button"
                 onClick={shareOnWhatsApp}
@@ -193,6 +314,7 @@ ${getShareUrl()}`;
                     flex
                     h-11
                     w-11
+                    shrink-0
                     items-center
                     justify-center
                     rounded-full
@@ -212,6 +334,70 @@ ${getShareUrl()}`;
                 </div>
               </button>
 
+              {/* INSTAGRAM */}
+              <button
+                type="button"
+                onClick={handleInstagramClick}
+                disabled={preparingInstagram}
+                className="
+                  flex
+                  w-full
+                  items-center
+                  gap-4
+                  rounded-2xl
+                  border
+                  border-slate-200
+                  p-4
+                  text-left
+                  transition
+                  hover:border-pink-300
+                  hover:bg-pink-50
+                  disabled:cursor-wait
+                  disabled:opacity-60
+                "
+              >
+                <div
+                  className="
+                    flex
+                    h-11
+                    w-11
+                    shrink-0
+                    items-center
+                    justify-center
+                    rounded-full
+                    bg-pink-100
+                    text-pink-600
+                  "
+                >
+                  {preparingInstagram ? (
+                    <Loader2 size={22} className="animate-spin" />
+                  ) : instagramFile ? (
+                    <Check size={22} />
+                  ) : (
+                    <InstagramIcon size={22} />
+                  )}
+                </div>
+
+                <div>
+                  <p className="font-bold text-slate-800">
+                    {preparingInstagram
+                      ? "Criando arte..."
+                      : instagramFile
+                        ? "Compartilhar arte"
+                        : "Instagram"}
+                  </p>
+
+                  <p className="text-sm text-slate-500">
+                    {preparingInstagram
+                      ? "Só um instante"
+                      : instagramFile
+                        ? "Arte pronta para Stories"
+                        : "Criar uma arte pronta para Stories"}
+                  </p>
+                </div>
+              </button>
+
+              {/* COPIAR LINK */}
               <button
                 type="button"
                 onClick={copyLink}
@@ -235,6 +421,7 @@ ${getShareUrl()}`;
                     flex
                     h-11
                     w-11
+                    shrink-0
                     items-center
                     justify-center
                     rounded-full
@@ -258,6 +445,25 @@ ${getShareUrl()}`;
                 </div>
               </button>
             </div>
+
+            {shareError && (
+              <div
+                className="
+                  mt-4
+                  rounded-2xl
+                  border
+                  border-orange-200
+                  bg-orange-50
+                  px-4
+                  py-3
+                  text-sm
+                  leading-5
+                  text-orange-700
+                "
+              >
+                {shareError}
+              </div>
+            )}
           </div>
         </div>
       )}

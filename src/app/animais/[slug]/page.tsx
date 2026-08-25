@@ -160,6 +160,7 @@ export default async function AnimalPage({ params }: Props) {
 
             <div className="mt-6">
               <AnimalShare
+                slug={slug}
                 animal={{
                   nome: animal.nome,
                   sexo: animal.sexo,
