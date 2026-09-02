@@ -16,6 +16,7 @@ export async function createClient() {
         },
 
         setAll(cookiesToSet) {
+          try {
           cookiesToSet.forEach(
             ({ name, value, options }) =>
               cookieStore.set(
@@ -24,6 +25,12 @@ export async function createClient() {
                 options
               )
           );
+        } catch{
+           /*
+             * Em Server Components, metadata e alguns fluxos de renderização,
+             * o Next não permite modificar cookies.
+             */
+          }
         },
       },
     }
