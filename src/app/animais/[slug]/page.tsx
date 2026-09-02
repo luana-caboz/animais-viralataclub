@@ -1,6 +1,8 @@
 import { formatarData } from "@/lib/slug";
+import { AnimalShare } from "@/modules/admin/components/AnimalShare";
 import { getAnimalBySlug } from "@/modules/animals/services/animal.service";
 import { ClipboardList, HeartPulse, PawPrint, Users } from "lucide-react";
+import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -11,6 +13,41 @@ type Props = {
     slug: string;
   }>;
 };
+
+export async function generateMetadata({
+  params,
+}: Props): Promise<Metadata> {
+  const { slug } = await params;
+
+  const animal = await getAnimalBySlug(slug);
+
+  if (!animal) {
+    return {
+      title: "Animal não encontrado | Vira Lata Club",
+      description: "Conheça os animais disponíveis para adoção.",
+    };
+  }
+
+  const infos = [
+    animal.sexo,
+    animal.porte ? `Porte ${animal.porte}` : null,
+    animal.idadeEstimada,
+  ]
+    .filter(Boolean)
+    .join(" • ");
+
+  return {
+    title: `${animal.nome} para adoção | Vira Lata Club`,
+
+    description: `${animal.nome} está procurando uma família! ${infos}. Conheça sua história e ajude compartilhando.`,
+
+    openGraph: {
+      title: `${animal.nome} está procurando uma família 🐾`,
+      description: `${infos}. Conheça ${animal.nome} e ajude a encontrar uma família.`,
+      type: "website",
+    },
+  };
+}
 
 export default async function AnimalPage({ params }: Props) {
   const { slug } = await params;
@@ -121,6 +158,18 @@ export default async function AnimalPage({ params }: Props) {
               </span>
             </div>
 
+            <div className="mt-6">
+              <AnimalShare
+                slug={slug}
+                animal={{
+                  nome: animal.nome,
+                  sexo: animal.sexo,
+                  porte: animal.porte,
+                  idadeEstimada: animal.idadeEstimada,
+                }}
+              />
+            </div>
+
             <div className="mt-6 rounded-3xl bg-gradient-to-r from-blue-50 to-orange-50 p-5">
               <p className="text-lg text-slate-700">
                 🏡 Procurando uma família desde{" "}
@@ -137,7 +186,7 @@ export default async function AnimalPage({ params }: Props) {
             <div className="mt-8 rounded-[32px] border border-slate-100 bg-white p-8 shadow-lg">
               <h2 className="flex items-center gap-3 text-2xl font-bold text-[#0f4fb6]">
                 <PawPrint size={28} />
-                Conheça o {animal.nome}
+                Conheça {animal.nome}
               </h2>
 
               <p className="mt-5 text-[18px] leading-8 text-slate-600">
