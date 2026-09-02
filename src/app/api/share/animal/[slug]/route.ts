@@ -57,80 +57,72 @@ function GenderIcon({
   const isFemale = sexo === "Fêmea";
 
   return element(
-    "div",
+    "svg",
     {
+      width: 25,
+      height: 25,
+      viewBox: "0 0 24 24",
       style: {
-        width: 25,
-        height: 25,
-        minWidth: 25,
         display: "flex",
-        position: "relative",
         marginRight: 10,
       },
     },
 
-    // Círculo
-    element("div", {
-      style: {
-        position: "absolute",
-        width: 13,
-        height: 13,
-        border: "3px solid #0f4fb6",
-        borderRadius: "50%",
-        top: 0,
-        left: 4,
-      },
-    }),
-
-    // Haste
-    element("div", {
-      style: isFemale
-        ? {
-            position: "absolute",
-            width: 3,
-            height: 9,
-            background: "#0f4fb6",
-            top: 13,
-            left: 9,
-          }
-        : {
-            position: "absolute",
-            width: 3,
-            height: 9,
-            background: "#0f4fb6",
-            top: 12,
-            left: 15,
-            transform: "rotate(45deg)",
-            transformOrigin: "top center",
+    isFemale
+      ? element(
+          "g",
+          {
+            fill: "none",
+            stroke: "#0f4fb6",
+            strokeWidth: 2.4,
+            strokeLinecap: "round",
+            strokeLinejoin: "round",
           },
-    }),
 
-    // Cruz da fêmea
-    isFemale &&
-      element("div", {
-        style: {
-          position: "absolute",
-          width: 11,
-          height: 3,
-          background: "#0f4fb6",
-          top: 19,
-          left: 5,
-        },
-      }),
+          // círculo
+          element("circle", {
+            cx: 12,
+            cy: 8,
+            r: 4.2,
+          }),
 
-    // Seta do macho
-    !isFemale &&
-      element("div", {
-        style: {
-          position: "absolute",
-          width: 8,
-          height: 3,
-          background: "#0f4fb6",
-          top: 15,
-          left: 15,
-          transform: "rotate(45deg)",
-        },
-      }),
+          // haste vertical
+          element("path", {
+            d: "M12 12.2V20",
+          }),
+
+          // cruz
+          element("path", {
+            d: "M8.7 16.8H15.3",
+          }),
+        )
+      : element(
+          "g",
+          {
+            fill: "none",
+            stroke: "#0f4fb6",
+            strokeWidth: 2.4,
+            strokeLinecap: "round",
+            strokeLinejoin: "round",
+          },
+
+          // círculo
+          element("circle", {
+            cx: 9,
+            cy: 15,
+            r: 4.2,
+          }),
+
+          // haste diagonal
+          element("path", {
+            d: "M12 12L19 5",
+          }),
+
+          // ponta da seta
+          element("path", {
+            d: "M14.8 5H19V9.2",
+          }),
+        ),
   );
 }
 
