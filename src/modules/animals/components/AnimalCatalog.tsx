@@ -10,6 +10,7 @@ type AnimalCatalogAnimal = {
   nome: string;
   sexo?: string | null;
   porte?: string | null;
+  cores?: string | null;
   idadeEstimada?: string | null;
   fotos?: {
     url?: string | null;
@@ -48,15 +49,61 @@ function normalizePorte(value?: string | null) {
   return normalize(value);
 }
 
+const COR_HEX: Record<string, string> = {
+  PRETO: "#1f1f1f",
+  BRANCO: "#ffffff",
+  CARAMELO: "#c68642",
+  CREME: "#f1e0b8",
+  MARROM: "#6b4423",
+  DOURADO: "#d4a72c",
+  CINZA: "#9ca3af",
+};
+
+function parseCores(value?: string | null) {
+  return (value ?? "")
+    .split(/[,;/]/)
+    .map((cor) => cor.trim())
+    .filter(Boolean);
+}
+
 export function AnimalCatalog({ animals }: AnimalCatalogProps) {
   const [search, setSearch] = useState("");
   const [sexo, setSexo] = useState("TODOS");
   const [porte, setPorte] = useState("TODOS");
+  const [selectedCores, setSelectedCores] = useState<string[]>([]);
+
+  // Lista de cores disponíveis, derivada dos próprios animais
+  const availableCores = useMemo(() => {
+    const map = new Map<string, string>();
+
+    animals.forEach((animal) => {
+      parseCores(animal.cores).forEach((cor) => {
+        const key = normalize(cor);
+        if (!map.has(key)) map.set(key, cor);
+      });
+    });
+
+    return Array.from(map, ([value, label]) => ({ value, label })).sort((a, b) =>
+      a.label.localeCompare(b.label, "pt-BR"),
+    );
+  }, [animals]);
 
   const hasActiveFilters =
-    search.trim() !== "" || sexo !== "TODOS" || porte !== "TODOS";
+    search.trim() !== "" ||
+    sexo !== "TODOS" ||
+    porte !== "TODOS" ||
+    selectedCores.length > 0;
 
-  const filteredAnimals = useMemo(() => {
+  function toggleCor(value: string) {
+    setSelectedCores((current) =>
+      current.includes(value)
+        ? current.filter((cor) => cor !== value)
+        : [...current, value],
+    );
+  }
+
+  // Animais que passam por busca, sexo e porte (sem considerar as cores)
+  const baseAnimals = useMemo(() => {
     const normalizedSearch = normalize(search);
 
     return animals.filter((animal) => {
@@ -74,10 +121,34 @@ export function AnimalCatalog({ animals }: AnimalCatalogProps) {
     });
   }, [animals, search, sexo, porte]);
 
+  // O animal precisa ter todas as cores selecionadas
+  const filteredAnimals = useMemo(
+    () =>
+      baseAnimals.filter((animal) => {
+        const animalCores = parseCores(animal.cores).map(normalize);
+        return selectedCores.every((cor) => animalCores.includes(cor));
+      }),
+    [baseAnimals, selectedCores],
+  );
+
+  // Quantos animais sobrariam ao marcar cada cor, dado o filtro atual
+  const coreCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+
+    filteredAnimals.forEach((animal) => {
+      new Set(parseCores(animal.cores).map(normalize)).forEach((cor) => {
+        counts.set(cor, (counts.get(cor) ?? 0) + 1);
+      });
+    });
+
+    return counts;
+  }, [filteredAnimals]);
+
   function clearFilters() {
     setSearch("");
     setSexo("TODOS");
     setPorte("TODOS");
+    setSelectedCores([]);
   }
 
   return (
@@ -167,7 +238,7 @@ export function AnimalCatalog({ animals }: AnimalCatalogProps) {
                 font-bold
                 uppercase
                 tracking-[0.12em]
-                text-[#0f4fb6]
+                text-gray-600
               "
             >
               Sexo
@@ -220,7 +291,7 @@ export function AnimalCatalog({ animals }: AnimalCatalogProps) {
                 font-bold
                 uppercase
                 tracking-[0.12em]
-                text-[#f58220]
+                text-gray-600
               "
             >
               Porte
@@ -266,9 +337,75 @@ export function AnimalCatalog({ animals }: AnimalCatalogProps) {
           </div>
         </div>
 
+        {/* CORES */}
+        {availableCores.length > 0 && (
+          <fieldset className="mt-5">
+            <legend className="mb-2 text-[10px] font-bold uppercase tracking-[0.12em] text-gray-600">
+              Cores
+            </legend>
+
+            <div className="flex flex-wrap gap-2">
+              {availableCores.map((cor) => {
+                const checked = selectedCores.includes(cor.value);
+                const count = coreCounts.get(cor.value) ?? 0;
+                const disabled = !checked && count === 0;
+                const hex = COR_HEX[cor.value] ?? "#d1d5db";
+                const isLight = ["BRANCO", "CREME", "DOURADO"].includes(
+                  cor.value,
+                );
+
+                return (
+                  <button
+                    key={cor.value}
+                    type="button"
+                    role="checkbox"
+                    aria-checked={checked}
+                    disabled={disabled}
+                    onClick={() => toggleCor(cor.value)}
+                    className={`inline-flex select-none items-center gap-2 rounded-full border px-3.5 py-1.5 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0f4fb6]/40 ${
+                      checked
+                        ? "border-[#0f4fb6] bg-[#0f4fb6] text-white"
+                        : disabled
+                          ? "cursor-not-allowed border-gray-200 bg-white text-gray-400 opacity-50"
+                          : "cursor-pointer border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
+                    }`}
+                  >
+                    <span
+                      aria-hidden="true"
+                      className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-black/15"
+                      style={{ backgroundColor: hex }}
+                    >
+                      {checked && (
+                        <svg
+                          width="10"
+                          height="10"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke={isLight ? "#0f4fb6" : "#ffffff"}
+                          strokeWidth="4"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M5 12.5l4.5 4.5L19 7.5" />
+                        </svg>
+                      )}
+                    </span>
+                    {cor.label}
+                    <span
+                      className={`text-xs ${checked ? "text-white/80" : "text-gray-400"}`}
+                    >
+                      ({count})
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </fieldset>
+        )}
+
         {/* RESULTADO */}
         {hasActiveFilters && (
-          <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1">
             <div className="flex items-center gap-2">
               <span className="inline-flex h-2 w-2 rounded-full bg-[#f58220]" />
 

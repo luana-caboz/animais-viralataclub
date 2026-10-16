@@ -1,7 +1,6 @@
 import { AnimalCatalog } from "@/modules/animals/components/AnimalCatalog";
 import { getAnimals } from "@/modules/animals/services/animal.service";
 import Image from "next/image";
-import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -202,25 +201,6 @@ export default async function Home() {
           <p className="text-sm opacity-80">© 2025 Vira Lata Club</p>
         </div>
       </footer>
-
-      <Link
-        href="/login"
-        className="
-          fixed
-          bottom-6
-          right-6
-          z-50
-          rounded-full
-          bg-white
-          p-3
-          shadow-lg
-          transition
-          hover:scale-105
-        "
-        title="Área Administrativa"
-      >
-        ⚙️
-      </Link>
     </main>
   );
 }
