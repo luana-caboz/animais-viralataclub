@@ -11,6 +11,7 @@ type AnimalCatalogAnimal = {
   sexo?: string | null;
   porte?: string | null;
   cores?: string | null;
+  status?: string | null;
   idadeEstimada?: string | null;
   fotos?: {
     url?: string | null;
@@ -508,31 +509,21 @@ export function AnimalCatalog({ animals }: AnimalCatalogProps) {
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {filteredAnimals.map((animal) => {
             const fotoPrincipal = animal.fotos?.[0]?.url?.trim();
+            const unavailable = animal.status === "INDISPONIVEL";
 
-            return (
-              <Link
-                key={animal.id}
-                href={`/animais/${getIdFromSlug(
-                  slugifyAnimal(animal.nome, animal.id),
-                )}`}
-                className="group"
-              >
+            const card = (
                 <article
-                  className="
-                    flex
-                    h-full
-                    flex-col
-                    overflow-hidden
-                    rounded-[28px]
-                    bg-white
-                    shadow-[0_8px_30px_rgba(15,79,182,0.08)]
-                    transition-all
-                    duration-300
-                    group-hover:-translate-y-1.5
-                    group-hover:shadow-[0_16px_40px_rgba(15,79,182,0.13)]
-                  "
+                  className={`flex h-full flex-col overflow-hidden rounded-[28px] transition-all duration-300 ${
+                    unavailable
+                      ? "bg-slate-100 shadow-[0_8px_30px_rgba(100,116,139,0.10)]"
+                      : "bg-white shadow-[0_8px_30px_rgba(15,79,182,0.08)] group-hover:-translate-y-1.5 group-hover:shadow-[0_16px_40px_rgba(15,79,182,0.13)]"
+                  }`}
                 >
-                  <div className="relative aspect-[4/5] overflow-hidden bg-[#cfe7f7]">
+                  <div
+                    className={`relative aspect-[4/5] overflow-hidden ${
+                      unavailable ? "bg-slate-200" : "bg-[#cfe7f7]"
+                    }`}
+                  >
                     {fotoPrincipal ? (
                       <Image
                         src={fotoPrincipal}
@@ -543,13 +534,11 @@ export function AnimalCatalog({ animals }: AnimalCatalogProps) {
                           (max-width: 1024px) 50vw,
                           25vw
                         "
-                        className="
-                          object-cover
-                          object-[center_42%]
-                          transition-transform
-                          duration-500
-                          group-hover:scale-[1.025]
-                        "
+                        className={`object-cover object-[center_42%] transition-transform duration-500 ${
+                          unavailable
+                            ? "opacity-80 grayscale"
+                            : "group-hover:scale-[1.025]"
+                        }`}
                       />
                     ) : (
                       <div className="flex h-full w-full flex-col items-center justify-center">
@@ -562,22 +551,22 @@ export function AnimalCatalog({ animals }: AnimalCatalogProps) {
                   </div>
 
                   <div className="flex flex-1 flex-col p-5">
-                    <h3 className="text-[22px] font-extrabold text-[#0f4fb6]">
+                    <h3
+                      className={`text-[22px] font-extrabold ${
+                        unavailable ? "text-slate-500" : "text-[#0f4fb6]"
+                      }`}
+                    >
                       {animal.nome}
                     </h3>
 
                     <div className="mt-2 flex flex-wrap items-center gap-2">
                       {animal.sexo && (
                         <span
-                          className="
-                            rounded-full
-                            bg-[#eef4ff]
-                            px-3
-                            py-1
-                            text-xs
-                            font-semibold
-                            text-[#0f4fb6]
-                          "
+                          className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                            unavailable
+                              ? "bg-slate-200 text-slate-500"
+                              : "bg-[#eef4ff] text-[#0f4fb6]"
+                          }`}
                         >
                           {animal.sexo}
                         </span>
@@ -585,15 +574,11 @@ export function AnimalCatalog({ animals }: AnimalCatalogProps) {
 
                       {animal.porte && (
                         <span
-                          className="
-                            rounded-full
-                            bg-[#fff1e5]
-                            px-3
-                            py-1
-                            text-xs
-                            font-semibold
-                            text-[#d9680d]
-                          "
+                          className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                            unavailable
+                              ? "bg-slate-200 text-slate-500"
+                              : "bg-[#fff1e5] text-[#d9680d]"
+                          }`}
                         >
                           Porte {animal.porte}
                         </span>
@@ -601,36 +586,50 @@ export function AnimalCatalog({ animals }: AnimalCatalogProps) {
                     </div>
 
                     {animal.idadeEstimada && (
-                      <p className="mt-3 text-sm text-gray-500">
+                      <p
+                        className={`mt-3 text-sm ${
+                          unavailable ? "text-slate-500" : "text-gray-500"
+                        }`}
+                      >
                         {animal.idadeEstimada}
                       </p>
                     )}
 
-                    <div
-                      className="
-                        mt-auto
-                        flex
-                        items-center
-                        gap-1
-                        pt-5
-                        text-sm
-                        font-bold
-                        text-[#0f4fb6]
-                      "
-                    >
-                      Conhecer {animal.nome}
-                      <span
-                        className="
-                          transition-transform
-                          duration-300
-                          group-hover:translate-x-1
-                        "
-                      >
-                        →
-                      </span>
-                    </div>
+                    {unavailable ? (
+                      <div className="mt-auto pt-5">
+                        <div className="cursor-not-allowed rounded-xl bg-slate-200 px-4 py-3 text-center text-sm font-bold text-slate-500">
+                          Indisponível
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="mt-auto flex items-center gap-1 pt-5 text-sm font-bold text-[#0f4fb6]">
+                        Conhecer {animal.nome}
+                        <span className="transition-transform duration-300 group-hover:translate-x-1">
+                          →
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </article>
+            );
+
+            if (unavailable) {
+              return (
+                <div key={animal.id} className="cursor-default">
+                  {card}
+                </div>
+              );
+            }
+
+            return (
+              <Link
+                key={animal.id}
+                href={`/animais/${getIdFromSlug(
+                  slugifyAnimal(animal.nome, animal.id),
+                )}`}
+                className="group"
+              >
+                {card}
               </Link>
             );
           })}

@@ -31,7 +31,8 @@ export function mapSyncToInternal(
     fotos: [],
 
     origem: "sheet",
-    visivelNoSite: animal.status === "DISPONIVEL",
+    visivelNoSite:
+      animal.status === "DISPONIVEL" || animal.status === "INDISPONIVEL",
 
     updatedFromSheetAt: now,
   };

@@ -7,8 +7,11 @@ export const dynamic = "force-dynamic";
 export default async function Home() {
   const animals = await getAnimals();
 
+  // INDISPONIVEL aparece no catálogo (cinza, sem link) para dar visibilidade
+  // de quantos animais o abrigo sustenta
   const availableAnimals = animals.filter(
-    (animal) => animal.status === "DISPONIVEL",
+    (animal) =>
+      animal.status === "DISPONIVEL" || animal.status === "INDISPONIVEL",
   );
 
   return (
