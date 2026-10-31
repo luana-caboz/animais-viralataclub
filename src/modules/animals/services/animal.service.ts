@@ -37,5 +37,12 @@ export async function getAnimalBySlug(slug: string) {
     return null;
   }
 
-  return getAnimalById(id);
+  const animal = await getAnimalById(id);
+
+  // Animais indisponíveis aparecem na listagem, mas não têm página pública
+  if (animal?.status === "INDISPONIVEL") {
+    return null;
+  }
+
+  return animal;
 }
