@@ -7,12 +7,23 @@ export const dynamic = "force-dynamic";
 export default async function Home() {
   const animals = await getAnimals();
 
-  // INDISPONIVEL aparece no catálogo (cinza, sem link) para dar visibilidade
-  // de quantos animais o abrigo sustenta
-  const availableAnimals = animals.filter(
-    (animal) =>
-      animal.status === "DISPONIVEL" || animal.status === "INDISPONIVEL",
-  );
+  // INDISPONIVEL aparece no catálogo (cinza, sem link) para dar visibilidade - após os disponíveis
+  const availableAnimals = animals
+    .filter(
+      (animal) =>
+        animal.status === "DISPONIVEL" || animal.status === "INDISPONIVEL",
+    )
+    .sort((a, b) => {
+      const aUnavailable = a.status === "INDISPONIVEL" ? 1 : 0;
+      const bUnavailable = b.status === "INDISPONIVEL" ? 1 : 0;
+
+      return (
+        aUnavailable - bUnavailable ||
+        (a.nome ?? "").localeCompare(b.nome ?? "", "pt-BR", {
+          sensitivity: "base",
+        })
+      );
+    });
 
   return (
     <main className="min-h-screen bg-[#faf8f4]">
