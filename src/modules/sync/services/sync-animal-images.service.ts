@@ -7,7 +7,7 @@ import { uploadImage } from "@/shared/integrations/cloudinary/service";
 import { downloadImage } from "@/shared/integrations/google-drive/drive.service";
 import { logger } from "@/shared/logger";
 import { LogModules } from "@/shared/logger/modules";
-import { AnimalImageInsert } from "@/types/animal-image";
+import { AnimalImageDB, AnimalImageInsert } from "@/types/animal-image";
 import { hasImagesChanged } from "../utils/image-sync.util";
 
 type DriveAnimal = {
@@ -29,10 +29,13 @@ type SyncAnimalImagesResult = {
 
 export async function syncAnimalImages(
   animal: DriveAnimal,
+  // Imagens atuais já carregadas pelo lote; se omitido, busca no banco
+  preloadedImages?: AnimalImageDB[],
 ): Promise<SyncAnimalImagesResult> {
   const errors: string[] = [];
 
-  const currentImages = await findImagesByAnimalId(animal.animalId);
+  const currentImages =
+    preloadedImages ?? (await findImagesByAnimalId(animal.animalId));
 
   if (!hasImagesChanged(animal.images, currentImages)) {
     logger.info("Imagens inalteradas. Pulando sincronização.", {

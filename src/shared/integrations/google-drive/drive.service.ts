@@ -2,6 +2,7 @@ import { logger } from "@/shared/logger";
 import { LogModules } from "@/shared/logger/modules";
 import { google } from "googleapis";
 import { mapperAnimalFolder } from "../../../modules/sync/mappers/drive.mapper";
+import { mapWithConcurrency } from "@/shared/utils/concurrency";
 import { getGoogleAuth } from "./client";
 import {
   DriveAnimal,
@@ -9,11 +10,22 @@ import {
   DriveImage,
 } from "./types";
 
-export async function listFolder(folderId: string) {
-  const drive = google.drive({
+// Chamadas simultâneas ao Drive (fica bem abaixo da cota da API)
+const DRIVE_CONCURRENCY = 5;
+
+let driveClient: ReturnType<typeof google.drive> | null = null;
+
+function getDrive() {
+  driveClient ??= google.drive({
     version: "v3",
     auth: getGoogleAuth(),
   });
+
+  return driveClient;
+}
+
+export async function listFolder(folderId: string) {
+  const drive = getDrive();
 
   const { data } = await drive.files.list({
     q: `'${folderId}' in parents and trashed=false`,
@@ -109,16 +121,20 @@ export async function listAnimalFoldersFromDrive(): Promise<
 
   const animals: DriveAnimalFolder[] = [];
 
-  for (const category of categories) {
+  // Categorias listadas em paralelo, mantendo a ordem original
+  const foldersByCategory = await Promise.all(
+    categories.map((category) =>
+      listAnimalFolders(category.id!),
+    ),
+  );
+
+  for (const [index, category] of categories.entries()) {
     const status =
       category.name === "Adotados"
         ? "ADOTADO"
         : "DISPONIVEL";
 
-    const folders =
-      await listAnimalFolders(
-        category.id!,
-      );
+    const folders = foldersByCategory[index];
 
     for (const folder of folders) {
       const parsed =
@@ -170,19 +186,14 @@ export async function listAnimalsBatchFromDrive(
       start + limit,
     );
 
-  const animals: DriveAnimal[] = [];
-
-  for (const folder of batchFolders) {
-    const images =
-      await listImages(
-        folder.folderId,
-      );
-
-    animals.push({
+  const animals: DriveAnimal[] = await mapWithConcurrency(
+    batchFolders,
+    DRIVE_CONCURRENCY,
+    async (folder) => ({
       ...folder,
-      images,
-    });
-  }
+      images: await listImages(folder.folderId),
+    }),
+  );
 
   logger.info(
     "Lote carregado do Google Drive",
@@ -211,19 +222,14 @@ export async function listAnimalsFromDrive(): Promise<
   const folders =
     await listAnimalFoldersFromDrive();
 
-  const animals: DriveAnimal[] = [];
-
-  for (const folder of folders) {
-    const images =
-      await listImages(
-        folder.folderId,
-      );
-
-    animals.push({
+  const animals: DriveAnimal[] = await mapWithConcurrency(
+    folders,
+    DRIVE_CONCURRENCY,
+    async (folder) => ({
       ...folder,
-      images,
-    });
-  }
+      images: await listImages(folder.folderId),
+    }),
+  );
 
   logger.info(
     "Animais listados do Google Drive",
@@ -240,10 +246,7 @@ export async function listAnimalsFromDrive(): Promise<
 export async function downloadImage(
   fileId: string,
 ): Promise<Buffer> {
-  const drive = google.drive({
-    version: "v3",
-    auth: getGoogleAuth(),
-  });
+  const drive = getDrive();
 
   const response =
     await drive.files.get(

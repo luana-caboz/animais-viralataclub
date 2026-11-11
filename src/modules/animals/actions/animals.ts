@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { supabase } from "@/lib/supabase";
+import { requireAdmin } from "@/modules/auth/services/admin-session.service";
 
 type ActionResponse = {
   success?: boolean;
@@ -14,6 +15,8 @@ export async function createAnimal(
   _prevState: ActionResponse | null,
   formData: FormData
 ): Promise<ActionResponse> {
+  await requireAdmin();
+
   const payload = {
     id: formData.get("id"),
     nome: formData.get("nome"),
@@ -134,6 +137,8 @@ export async function updateAnimal(
   _prevState: ActionResponse | null,
   formData: FormData
 ): Promise<ActionResponse> {
+  await requireAdmin();
+
   const { error } = await supabase
     .from("animals")
     .update({
@@ -231,6 +236,8 @@ export async function updateAnimal(
 export async function deleteAnimal(
   id: string
 ) {
+  await requireAdmin();
+
   const { error } = await supabase
     .from("animals")
     .delete()

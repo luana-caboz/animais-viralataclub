@@ -1,5 +1,5 @@
 import { supabaseAdmin } from "@/shared/lib/supabase/admin";
-import { AnimalImageInsert } from "@/types/animal-image";
+import { AnimalImageDB, AnimalImageInsert } from "@/types/animal-image";
 
 export async function findImagesByAnimalId(
   animalId: string
@@ -17,6 +17,36 @@ export async function findImagesByAnimalId(
   }
 
   return data;
+}
+
+// Imagens de vários animais numa única consulta, agrupadas por animal_id
+export async function findImagesByAnimalIds(
+  animalIds: string[]
+) {
+  const imagesByAnimal = new Map<string, AnimalImageDB[]>();
+
+  if (animalIds.length === 0) {
+    return imagesByAnimal;
+  }
+
+  const { data, error } = await supabaseAdmin
+    .from("animal_images")
+    .select("*")
+    .in("animal_id", animalIds)
+    .order("ordem");
+
+  if (error) {
+    throw error;
+  }
+
+  for (const image of data as AnimalImageDB[]) {
+    imagesByAnimal.set(image.animal_id, [
+      ...(imagesByAnimal.get(image.animal_id) ?? []),
+      image,
+    ]);
+  }
+
+  return imagesByAnimal;
 }
 
 export async function findAllAnimalImages() {
