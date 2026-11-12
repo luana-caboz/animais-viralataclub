@@ -324,6 +324,9 @@ GOOGLE_SHEET_ID=
 
 # Optional: permits external automation to call POST /api/sync
 SYNC_API_SECRET=
+
+# Required for the scheduled sync: Vercel Cron sends it on GET /api/sync
+CRON_SECRET=
 ```
 
 Never commit `.env.local` or expose:
@@ -373,6 +376,19 @@ synchronizes animal data from Google Sheets. It requires an authenticated admin 
 The spreadsheet acts as the authoritative source for synchronized animal records.
 
 Animals removed from the spreadsheet may also be removed from the application database during synchronization.
+
+### Scheduled synchronization
+
+Animal synchronization also runs automatically through [Vercel Cron](https://vercel.com/docs/cron-jobs), configured in `vercel.json`:
+
+| When (America/Sao_Paulo) | Cron expression (UTC) |
+| --- | --- |
+| Monday, 22:00 | `0 1 * * 2` |
+| Friday, 12:00 | `0 15 * * 5` |
+
+Vercel calls `GET /api/sync` with `Authorization: Bearer <CRON_SECRET>`. The `GET` handler only accepts this secret, so an admin session alone cannot trigger it. Cron jobs run only on the production deployment.
+
+The scheduled run does the same as the admin sync button: it synchronizes the spreadsheet and then the changed images, in batches of 20 animals, inside a single request (`maxDuration = 300`). It stops starting new image batches after about 200 seconds; because image synchronization is incremental, anything left over is picked up by the next run.
 
 ### Image synchronization
 

@@ -25,27 +25,38 @@ export async function syncAnimals(): Promise<SyncResult> {
   let animalsUpserted = 0;
   let animalsRemoved = 0;
 
-  for (const animal of animals) {
-    try {
-      await syncRepository.upsertAnimal(animal);
-      animalsUpserted++;
-    } catch (error) {
-      logger.error("Erro ao sincronizar animal", {
-        module: LogModules.SyncAnimals,
-        animalId: animal.id,
-        animalName: animal.nome,
-        error,
-      });
+  try {
+    await syncRepository.upsertAnimals(animals);
+    animalsUpserted = animals.length;
+  } catch (bulkError) {
+    // Se o lote falhar, repete um a um para identificar qual animal tem problema
+    logger.warn("Upsert em lote falhou; repetindo animal por animal", {
+      module: LogModules.SyncAnimals,
+      error: bulkError,
+    });
 
-      errors.push({
-        operation: "upsert",
-        animalId: animal.id,
-        animalName: animal.nome,
-        error:
-          error instanceof Error
-            ? error.message
-            : String(error),
-      });
+    for (const animal of animals) {
+      try {
+        await syncRepository.upsertAnimal(animal);
+        animalsUpserted++;
+      } catch (error) {
+        logger.error("Erro ao sincronizar animal", {
+          module: LogModules.SyncAnimals,
+          animalId: animal.id,
+          animalName: animal.nome,
+          error,
+        });
+
+        errors.push({
+          operation: "upsert",
+          animalId: animal.id,
+          animalName: animal.nome,
+          error:
+            error instanceof Error
+              ? error.message
+              : String(error),
+        });
+      }
     }
   }
 

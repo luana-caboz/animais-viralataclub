@@ -24,6 +24,41 @@ export class SyncRepository {
     }
   }
 
+  // Upsert de todos os animais numa única requisição
+  async upsertAnimals(payloads: InternalAnimal[]): Promise<void> {
+    if (payloads.length === 0) {
+      return;
+    }
+
+    // Campos `undefined` não podem ir no lote: o supabase-js os gravaria como
+    // null, enquanto o upsert individual preserva o valor do banco. Por isso
+    // remove esses campos e agrupa as linhas pelo mesmo conjunto de colunas.
+    const groups = new Map<string, Record<string, unknown>[]>();
+
+    for (const payload of payloads) {
+      const row = Object.fromEntries(
+        Object.entries(mapInternalToDatabase(payload)).filter(
+          ([, value]) => value !== undefined,
+        ),
+      );
+      const columns = Object.keys(row).sort().join(",");
+
+      groups.set(columns, [...(groups.get(columns) ?? []), row]);
+    }
+
+    for (const rows of groups.values()) {
+      const { error } = await this.supabase
+        .from("animals")
+        .upsert(rows, {
+          onConflict: "id",
+        });
+
+      if (error) {
+        throw error;
+      }
+    }
+  }
+
   async getAnimalsToDelete(
     validAnimalIds: string[],
   ): Promise<AnimalToDelete[]> {

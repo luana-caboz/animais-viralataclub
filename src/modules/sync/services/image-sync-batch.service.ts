@@ -1,9 +1,14 @@
+import { findImagesByAnimalIds } from "@/modules/animals/repositories/animal-images.repository";
 import { findExistingAnimalIds } from "@/modules/animals/repositories/animal.repository";
 import { DriveAnimal } from "@/shared/integrations/google-drive/types";
 import { logger } from "@/shared/logger";
 import { LogModules } from "@/shared/logger/modules";
+import { mapWithConcurrency } from "@/shared/utils/concurrency";
 import { ImageBatchResult } from "../types/sync.type";
 import { syncAnimalImages } from "./sync-animal-images.service";
+
+// Animais processados ao mesmo tempo (cada um já envia suas fotos em paralelo)
+const ANIMAL_CONCURRENCY = 3;
 
 export async function syncImagesBatch(
   animals: DriveAnimal[],
@@ -16,9 +21,12 @@ export async function syncImagesBatch(
     };
   }
 
-  const existingAnimals = await findExistingAnimalIds(
-    animals.map((animal) => animal.animalId),
-  );
+  const animalIds = animals.map((animal) => animal.animalId);
+
+  const [existingAnimals, imagesByAnimal] = await Promise.all([
+    findExistingAnimalIds(animalIds),
+    findImagesByAnimalIds(animalIds),
+  ]);
 
   let uploadedImages = 0;
 
@@ -29,7 +37,7 @@ export async function syncImagesBatch(
     batchSize: animals.length,
   });
 
-  for (const animal of animals) {
+  await mapWithConcurrency(animals, ANIMAL_CONCURRENCY, async (animal) => {
     if (!existingAnimals.has(animal.animalId)) {
       logger.warn("Animal encontrado no Drive, mas não existe no banco.", {
         module: LogModules.SyncImages,
@@ -38,11 +46,14 @@ export async function syncImagesBatch(
         folderId: animal.folderId,
       });
 
-      continue;
+      return;
     }
 
     try {
-      const result = await syncAnimalImages(animal);
+      const result = await syncAnimalImages(
+        animal,
+        imagesByAnimal.get(animal.animalId) ?? [],
+      );
 
       uploadedImages += result.uploaded;
 
@@ -59,7 +70,7 @@ export async function syncImagesBatch(
 
       errors.push(message);
     }
-  }
+  });
 
   return {
     processedAnimals: animals.length,
